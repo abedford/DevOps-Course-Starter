@@ -2,6 +2,7 @@
 from todo_app.data.session_items import *
 from operator import itemgetter
 from flask import Flask, render_template, request, redirect
+from operator import itemgetter
 
 from todo_app.flask_config import Config
 
