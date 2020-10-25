@@ -1,7 +1,7 @@
 
 from todo_app.data.session_items import *
-from flask import Flask, render_template, request, redirect
 from operator import itemgetter
+from flask import Flask, render_template, request, redirect
 
 from todo_app.flask_config import Config
 
@@ -39,10 +39,10 @@ def complete_item():
    return redirect('/')
 
 
+      form_data = request.form
 @app.route('/items/remove', methods = ['POST', 'GET'])
 def remove_items():
    if request.method == 'POST':
-      form_data = request.form
       task_id = int(form_data["id"])
       
       remove_item_by_id(task_id)

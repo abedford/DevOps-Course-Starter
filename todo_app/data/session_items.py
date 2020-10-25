@@ -27,7 +27,8 @@ def get_item(id):
         item: The saved item, or None if no items match the specified ID.
     """
     items = get_items()
-    return next((item for item in items if item['id'] == int(id)), None)
+    print(items)
+    return next((item for item in items if int(item['id']) == int(id)), None)
 
 
 def add_item(title):
@@ -62,7 +63,8 @@ def save_item(item):
         item: The item to update.
     """
     existing_items = get_items()
-    updated_items = [item if item['id'] == existing_item['id'] else existing_item for existing_item in existing_items]
+    
+    updated_items = [item if int(item['id']) == int(existing_item['id']) else existing_item for existing_item in existing_items]
 
     session['items'] = updated_items
 
@@ -73,13 +75,13 @@ def remove_item_by_id(item_id):
     Deletes an existing item in the session that matches the id. If there is no matching existing item, nothing is deleted.
 
     Args:
-        item_id: The id of the item to remove.
     """
     existing_item = get_item(item_id)
+        item_id: The id of the item to remove.
     existing_items = get_items()
     if (existing_item != None):
         existing_items.remove(existing_item)
-    
     session['items'] = existing_items
+    
 
     return item_id
