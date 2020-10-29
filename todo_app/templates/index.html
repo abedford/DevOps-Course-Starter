@@ -6,13 +6,50 @@
     <h1 class="display-4">To-Do App</h1>
     <p class="lead">Just another to-do app.</p>
   </div>
+  <div class="container">
+    <table class="table table-striped">
+      <thead>
+        <tr>
+          <th scope="col">Task ID</th>
+          <th scope="col">Task Name</th>
+          <th scope="col">Task Status</th>
+        </tr>
+      </thead>
+      <tbody>
+      
+        {% for item in items %}
+          <tr>
+            <td>{{ item.id }}</td>
+            <td>{{ item.title }}</td>
+            <td>{{ item.status }}</td>
+            <td><form action="/items/remove" method = "POST">
+              <input type="hidden" name="id" value="{{ item.id }}"/>
+              <button type="submit" class="btn btn-primary">Delete</button>
+            </form></td>
 
-  <div class="row">
-    <div class="col-md-12">
-      <h2>Items</h2>
-      <ul class="list-group mb-4">
-        <!-- List the todo items here -->
-      </ul>
+            
+            <td>
+              {% if item.status != 'Completed' %}
+              <form action="/items/complete" method = "POST">
+                <input type="hidden" name="id" value="{{ item.id }}"/>
+                <button type="submit" class="btn btn-primary">Complete</button>
+              </form>
+              {% endif %}
+            </td>
+          </tr>
+          {% endfor %}
+  </div>
+  
+  <div class="container p-3 my-3 bg-dark text-white">
+    <div class="row">
+      <div class="col-sm">
+        <h5>Add a new task</h5>
+        <form action="/items/add" method = "POST">
+          <p>Task Name <input type = "text" name = "title" required/></p>
+          <p><button type="submit" class="btn btn-primary">Add</button></p>
+      </form>
+      
+      </div>
     </div>
   </div>
 {% endblock %}
