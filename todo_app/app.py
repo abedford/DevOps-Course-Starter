@@ -16,13 +16,13 @@ def index():
    return render_template('index.html', title='To Do App', items=sorted_items)
 
 
-@app.route('/items/add', methods = ['POST', 'GET'])
+@app.route('/items/add', methods = ['POST'])
 def add_items():
-   if request.method == 'POST':
-      form_data = request.form
-      task = form_data["title"]
-      add_item(task)
-        
+   
+   form_data = request.form
+   task = form_data["title"]
+   add_item(task)
+      
    return redirect('/')
 
 
@@ -35,8 +35,7 @@ def complete_item():
       if (existing_item != None) and (existing_item['status'] != 'Completed'):
          updated_item = { 'id': task_id, 'status': 'Completed', 'title': existing_item['title'] }
          save_item(updated_item)
-         return redirect('/')
-
+         
    return redirect('/')
 
 
@@ -45,11 +44,9 @@ def remove_items():
    if request.method == 'POST':
       form_data = request.form
       task_id = int(form_data["id"])
-      existing_item = get_item(task_id)
-      if (existing_item != None):
-         remove_item(existing_item)
-         return redirect('/')
-    
+      
+      remove_item_by_id(task_id)
+      
    return redirect('/')
 
 

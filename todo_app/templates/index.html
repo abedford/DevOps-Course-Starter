@@ -22,6 +22,20 @@
             <td>{{ item.id }}</td>
             <td>{{ item.title }}</td>
             <td>{{ item.status }}</td>
+            <td><form action="/items/remove" method = "POST">
+              <input type="hidden" name="id" value="{{ item.id }}"/>
+              <button type="submit" class="btn btn-primary">Delete</button>
+            </form></td>
+
+            
+            <td>
+              {% if item.status != 'Completed' %}
+              <form action="/items/complete" method = "POST">
+                <input type="hidden" name="id" value="{{ item.id }}"/>
+                <button type="submit" class="btn btn-primary">Complete</button>
+              </form>
+              {% endif %}
+            </td>
           </tr>
           {% endfor %}
   </div>
@@ -31,23 +45,10 @@
       <div class="col-sm">
         <h5>Add a new task</h5>
         <form action="/items/add" method = "POST">
-          <p>Task Name <input type = "text" name = "title" /></p>
+          <p>Task Name <input type = "text" name = "title" required/></p>
           <p><button type="submit" class="btn btn-primary">Add</button></p>
       </form>
-      </div>
-      <div class="col-sm">
-        <h5>Delete a task</h5>
-        <form action="/items/remove" method = "POST">
-          <p>Task ID <input type = "text" name = "id" /></p>
-          <p><button type="submit" class="btn btn-primary">Delete</button></p>
-      </form>
-      </div>
-      <div class="col-sm">
-        <h5>Complete a task</h5>
-        <form action="/items/complete" method = "POST">
-          <p>Task ID <input type = "text" name = "id" /></p>
-          <p><button type="submit" class="btn btn-primary">Complete</button></p>
-      </form>
+      
       </div>
     </div>
   </div>
