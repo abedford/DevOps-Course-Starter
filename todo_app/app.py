@@ -1,6 +1,7 @@
 
 from todo_app.data.session_items import *
 from todo_app.data.trello_board import *
+from todo_app.data.task import *
 from operator import itemgetter
 from flask import Flask, render_template, request, redirect
 from operator import itemgetter
@@ -14,13 +15,13 @@ app.config.from_object(Config)
 @app.route('/')
 def index():
    lists = get_lists()
-   all_cards = []
+   all_tasks = []
    for list in lists:
-      all_cards.extend(get_cards_in_list(list))
+      all_tasks.extend(get_cards_in_list(list))
 
-   print(all_cards)
+   print(all_tasks)
    # sorted_cards = sorted(all_cards, key = itemgetter('status'), reverse=True)
-   return render_template('index.html', title='To Do App', items=all_cards)
+   return render_template('index.html', title='To Do App', tasks=all_tasks)
 
 
 @app.route('/items/add', methods = ['POST'])
@@ -58,6 +59,3 @@ def remove_items():
 if __name__ == '__main__':
     app.run()
 
-
-###  update a card from one board to the other
-### https://api.trello.com/1/cards/5fb8296676b04e7c6bfd1d74?key=1b2fee4ea3ee014a8fb424eb98524969&token=e17fc953a77e0043ac42e271e4a25d68d4115b492d42dcf8f811935d441fb0b5&idList=5fb8296a9626b51f4c9a4df6

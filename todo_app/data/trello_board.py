@@ -1,4 +1,6 @@
 
+from todo_app.data.status import Status
+from todo_app.data.task import Task
 import requests
 import json
 
@@ -21,7 +23,7 @@ board_id = 'veratAl7'
 
     """
 def get_lists():
-    lists = []
+    statuses = []
     print("Getting the lists from the trello board")
     board_id = 'veratAl7'
     api_key = os.getenv('API_KEY')
@@ -33,34 +35,33 @@ def get_lists():
         json_response = response.json()
     
         for value in json_response:
-            lists.append((value['id'], value['name']))
+            statuses.append(Status(value['id'], value['name']))
 
-    return lists
+    return statuses
 
 def get_cards_in_list(list):
-    cards = []
+    tasks = []
     board_id = 'veratAl7'
     api_key = os.getenv('API_KEY')
     server_token = os.getenv('SERVER_TOKEN')
     
-    get_cards_query = f"https://api.trello.com/1/lists/{list[0]}/cards?key={api_key}&token={server_token}"
+    get_cards_query = f"https://api.trello.com/1/lists/{list.id}/cards?key={api_key}&token={server_token}"
     response = requests.get(get_cards_query)
     if (response.status_code == 200):
         json_response = response.json()
     
         for value in json_response:
-            new_card = (value['id'], value['name'], list[1])
-            cards.append(new_card)
+            new_task = Task(value['id'], value['name'], list.title)
+            tasks.append(new_task)
 
-    return cards
+    return tasks
 
 
 def get_list_id_from_name(list_name):
     lists = get_lists()
     for list in lists:
-        if ( list[1] == list_name):
-            list_id = list[0]
-            return list_id
+        if ( list.title == list_name):
+            return list.id
     
     print("Didn't find list name, returning empty string")
     return ""

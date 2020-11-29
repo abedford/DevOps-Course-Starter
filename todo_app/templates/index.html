@@ -17,21 +17,21 @@
       </thead>
       <tbody>
       
-        {% for item in items %}
+        {% for task in tasks %}
           <tr>
-            <td>{{ item[0] }}</td>
-            <td>{{ item[1] }}</td>
-            <td>{{ item[2] }}</td>
+            <td>{{ task.id }}</td>
+            <td>{{ task.title }}</td>
+            <td>{{ task.status }}</td>
             <td><form action="/items/remove" method = "POST">
-              <input type="hidden" name="id" value="{{ item[0] }}"/>
+              <input type="hidden" name="id" value="{{ task.id }}"/>
               <button type="submit" class="btn btn-primary">Delete</button>
             </form></td>
 
             
             <td>
-              {% if item.status != 'Completed' %}
+              {% if task.status != 'Done' %}
               <form action="/items/complete" method = "POST">
-                <input type="hidden" name="id" value="{{ item[0] }}"/>
+                <input type="hidden" name="id" value="{{ task.id }}"/>
                 <button type="submit" class="btn btn-primary">Complete</button>
               </form>
               {% endif %}
