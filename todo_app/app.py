@@ -1,5 +1,4 @@
 
-from todo_app.data.session_items import *
 from todo_app.data.trello_board import *
 from todo_app.data.task import *
 from operator import itemgetter
@@ -19,18 +18,20 @@ def index():
    for list in lists:
       all_tasks.extend(get_cards_in_list(list))
 
-   print(all_tasks)
-   # sorted_cards = sorted(all_cards, key = itemgetter('status'), reverse=True)
    return render_template('index.html', title='To Do App', tasks=all_tasks)
 
 
 @app.route('/items/add', methods = ['POST'])
-def add_items():
-   
+def add_item():
    form_data = request.form
-   task = form_data["title"]
+   task_title = form_data["title"]
+   task_desc = form_data["description"]
+   task_due_date = "12/09/2021"
+   print(f"Adding task with {task_title} {task_desc}")
    
-   add_task(task)   
+   
+   add_task(task_title, task_desc, task_due_date)  
+    
    return redirect('/')
 
 
@@ -45,8 +46,8 @@ def complete_item():
 
 
      
-@app.route('/items/remove', methods = ['POST', 'GET'])
-def remove_items():
+@app.route('/items/remove', methods = ['POST'])
+def remove_item():
    if request.method == 'POST':
       form_data = request.form
       task_id = form_data["id"]
@@ -55,6 +56,16 @@ def remove_items():
       
    return redirect('/')
 
+
+@app.route('/items/restart', methods = ['POST'])
+def restart_item():
+   if request.method == 'POST':
+      form_data = request.form
+      task_id = form_data["id"]
+      
+      reopen_task(task_id)
+      
+   return redirect('/')
 
 if __name__ == '__main__':
     app.run()

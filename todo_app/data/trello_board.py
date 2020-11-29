@@ -11,8 +11,10 @@ from dotenv import load_dotenv
 dotenv_path = join(dirname(__file__), '.env')
 load_dotenv(dotenv_path)
  
- 
-board_id = 'veratAl7'
+board_id = os.getenv('BOARD_ID')
+api_key = os.getenv('API_KEY')
+server_token = os.getenv('SERVER_TOKEN')
+    
 
 """
     Gets the lists available on the board
@@ -25,9 +27,6 @@ board_id = 'veratAl7'
 def get_lists():
     statuses = []
     print("Getting the lists from the trello board")
-    board_id = 'veratAl7'
-    api_key = os.getenv('API_KEY')
-    server_token = os.getenv('SERVER_TOKEN')
    
     get_lists_query = f"https://api.trello.com/1/boards/{board_id}/lists?key={api_key}&token={server_token}"
     response = requests.get(get_lists_query)
@@ -41,17 +40,14 @@ def get_lists():
 
 def get_cards_in_list(list):
     tasks = []
-    board_id = 'veratAl7'
-    api_key = os.getenv('API_KEY')
-    server_token = os.getenv('SERVER_TOKEN')
     
     get_cards_query = f"https://api.trello.com/1/lists/{list.id}/cards?key={api_key}&token={server_token}"
     response = requests.get(get_cards_query)
     if (response.status_code == 200):
         json_response = response.json()
-    
+
         for value in json_response:
-            new_task = Task(value['id'], value['name'], list.title)
+            new_task = Task(value['id'], value['name'], value['desc'], list.title, value['due'])
             tasks.append(new_task)
 
     return tasks
@@ -78,11 +74,8 @@ def get_list_id_from_name(list_name):
 def update_task(card_id, list_name):
     
     print("Updating a task")
-    board_id = 'veratAl7'
     
     list_id = get_list_id_from_name(list_name)
-    api_key = os.getenv('API_KEY')
-    server_token = os.getenv('SERVER_TOKEN')
     
     update_card_query = f"https://api.trello.com/1/cards/{card_id}?key={api_key}&token={server_token}&idList={list_id}"
 
@@ -123,10 +116,7 @@ def reopen_task(card_id):
 def delete_task(card_id):
     
     print("Deleting a task")
-    board_id = 'veratAl7'
-    api_key = os.getenv('API_KEY')
-    server_token = os.getenv('SERVER_TOKEN')
-    
+   
     delete_task_query = f"https://api.trello.com/1/cards/{card_id}?key={api_key}&token={server_token}"
 
     response = requests.delete(delete_task_query)
@@ -140,11 +130,10 @@ def delete_task(card_id):
         task_name: The name of the task
 
     """
-def add_task(task_name):
+def add_task(task_name, description="", duedate=""):
     
     print("Adding a new task")
-    board_id = 'veratAl7'
-
+    
     url = "https://api.trello.com/1/cards"
 
     todo_list_id = get_list_id_from_name("To Do")
@@ -153,7 +142,9 @@ def add_task(task_name):
     'key': os.getenv('API_KEY'),
     'token': os.getenv('SERVER_TOKEN')   ,
     'idList': f'{todo_list_id}',
-    'name': task_name
+    'name': task_name,
+    'desc': description,
+    'due': duedate
     }
 
     response = requests.request(
@@ -161,7 +152,10 @@ def add_task(task_name):
         url,
         params=query
         )
-    
+
+    print(query)
+
+    print(response)    
     if (response.status_code == 200):
         print("Task added successfully")
 
