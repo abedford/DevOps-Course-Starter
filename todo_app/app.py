@@ -26,8 +26,8 @@ def add_item():
    form_data = request.form
    task_title = form_data["title"]
    task_desc = form_data["description"]
-   task_due_date = "12/09/2021"
-   print(f"Adding task with {task_title} {task_desc}")
+   task_due_date = form_data["duedate"]
+   print(f"Adding task with {task_title} {task_desc} {task_due_date}")
    
    
    add_task(task_title, task_desc, task_due_date)  
