@@ -16,6 +16,45 @@ api_key = os.getenv('API_KEY')
 server_token = os.getenv('SERVER_TOKEN')
     
 
+ 
+
+"""
+    Gets all the cards available on the board
+
+    Returns: 
+        a list of tuples representing the lists available on the board (id, name)
+
+
+    """
+def get_all_cards_on_board():
+    tasks = []
+    print("Getting the cards from the trello board")
+   
+    get_cards_query = f"https://api.trello.com/1/boards/{board_id}/cards?key={api_key}&token={server_token}"
+    response = requests.get(get_cards_query)
+    if (response.status_code == 200):
+        json_response = response.json()
+    
+        print(json_response)
+        
+        for value in json_response:
+            card_id = value['id']
+            
+            card_status = "Unknown"
+            get_list_for_card_query = f"https://api.trello.com/1/cards/{card_id}/list?key={api_key}&token={server_token}"
+            response = requests.get(get_list_for_card_query)
+            if (response.status_code == 200):
+                json_response_for_list = response.json()
+                print(json_response_for_list)
+                card_status = json_response_for_list['name']
+                print(f"Card status is {card_status}")
+
+            new_task = Task(card_id, value['name'], value['desc'], card_status, value['due'])
+            tasks.append(new_task)
+
+    return tasks
+
+
 """
     Gets the lists available on the board
 

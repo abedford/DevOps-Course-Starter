@@ -50,3 +50,11 @@ You should see output similar to the following:
  * Debugger PIN: 226-556-590
 ```
 Now visit [`http://localhost:5000/`](http://localhost:5000/) in your web browser to view the app.
+
+## Connecting to the Trello API
+To connect to Trello API you will need an API key, a server token and a board ID. Register with https://developer.atlassian.com/cloud/trello/ to get your API key and server token. 
+Create a board on Trello and use this board ID for the ToDo app. 
+Put the details in the .env file
+API_KEY=XXX
+SERVER_TOKEN=XXX
+BOARD_ID=XXX

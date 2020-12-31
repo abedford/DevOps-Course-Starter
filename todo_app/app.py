@@ -1,9 +1,7 @@
 
 from todo_app.data.trello_board import *
 from todo_app.data.task import *
-from operator import itemgetter
 from flask import Flask, render_template, request, redirect
-from operator import itemgetter
 
 from todo_app.flask_config import Config
 
@@ -13,12 +11,12 @@ app.config.from_object(Config)
 
 @app.route('/')
 def index():
-   lists = get_lists()
-   all_tasks = []
-   for list in lists:
-      all_tasks.extend(get_cards_in_list(list))
-
-   return render_template('index.html', title='To Do App', tasks=all_tasks)
+   cards = get_all_cards_on_board()
+   # all_tasks = []
+   # for list in lists:
+   #    all_tasks.extend(get_cards_in_list(list))
+   print(cards)
+   return render_template('index.html', title='To Do App', tasks=cards)
 
 
 @app.route('/items/add', methods = ['POST'])
