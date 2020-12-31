@@ -5,7 +5,37 @@
   <div class="jumbotron">
     <h1 class="display-4">To-Do App</h1>
     <p class="lead">Just another to-do app.</p>
+  
   </div>
+  <div class="container p-3 my-3 bg-dark text-white">
+    <div class="row">
+      <div class="col-sm">
+        <h5>Add a new task</h5>
+        <form action="/items/add" method = "POST">
+          <table class="table table-striped text-white" >
+            <thead>
+          
+              <tr>
+                <td>Task Name <input type = "text" name = "title" required/></td>
+                <td>Task Description <input type = "text" name = "description" required/></td>
+                <td>Due Date <input type="date" name="duedate" value="2020-12-31" required></td>
+                <!--<div class="input-group date" data-provide="datepicker">
+                  <input type="text" class="form-control">
+                  <div class="input-group-addon">
+                      <span class="glyphicon glyphicon-th"></span>
+                  </div>
+              </div>-->
+                <td><button type="submit" class="btn btn-primary">Add</button></td>
+              </tr>
+          
+            </thead>
+          </table>
+      </form>
+        
+      </div>
+    </div> 
+  </div>
+  
   <div class="container">
     <table class="table table-striped">
       <thead>
@@ -13,43 +43,43 @@
           <th scope="col">Task ID</th>
           <th scope="col">Task Name</th>
           <th scope="col">Task Status</th>
+          <th scope="col">Description</th>
+          <th scope="col">Due Date</th>
         </tr>
       </thead>
       <tbody>
       
-        {% for item in items %}
+        {% for task in tasks %}
           <tr>
-            <td>{{ item.id }}</td>
-            <td>{{ item.title }}</td>
-            <td>{{ item.status }}</td>
+            <td>{{ task.id }}</td>
+            <td>{{ task.title }}</td>
+            <td>{{ task.status }}</td>
+            <td>{{ task.description }}</td>
+            <td>{{ task.duedate }}</td>
             <td><form action="/items/remove" method = "POST">
-              <input type="hidden" name="id" value="{{ item.id }}"/>
+              <input type="hidden" name="id" value="{{ task.id }}"/>
               <button type="submit" class="btn btn-primary">Delete</button>
             </form></td>
 
             
             <td>
-              {% if item.status != 'Completed' %}
+              {% if task.status != 'Done' %}
               <form action="/items/complete" method = "POST">
-                <input type="hidden" name="id" value="{{ item.id }}"/>
+                <input type="hidden" name="id" value="{{ task.id }}"/>
                 <button type="submit" class="btn btn-primary">Complete</button>
               </form>
               {% endif %}
+              {% if task.status == 'Done' %}
+              <form action="/items/restart" method = "POST">
+                <input type="hidden" name="id" value="{{ task.id }}"/>
+                <button type="submit" class="btn btn-primary">Restart</button>
+              </form>
+            {% endif %}
             </td>
           </tr>
+        </tr>
           {% endfor %}
   </div>
   
-  <div class="container p-3 my-3 bg-dark text-white">
-    <div class="row">
-      <div class="col-sm">
-        <h5>Add a new task</h5>
-        <form action="/items/add" method = "POST">
-          <p>Task Name <input type = "text" name = "title" required/></p>
-          <p><button type="submit" class="btn btn-primary">Add</button></p>
-      </form>
-      
-      </div>
-    </div>
-  </div>
+  
 {% endblock %}

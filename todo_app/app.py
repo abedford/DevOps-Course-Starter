@@ -1,7 +1,7 @@
 
-from todo_app.data.session_items import *
+from todo_app.data.trello_board import *
+from todo_app.data.task import *
 from flask import Flask, render_template, request, redirect
-from operator import itemgetter
 
 from todo_app.flask_config import Config
 
@@ -11,18 +11,25 @@ app.config.from_object(Config)
 
 @app.route('/')
 def index():
-   items = get_items()
-   sorted_items = sorted(items, key = itemgetter('status'), reverse=True)
-   return render_template('index.html', title='To Do App', items=sorted_items)
+   cards = get_all_cards_on_board()
+   # all_tasks = []
+   # for list in lists:
+   #    all_tasks.extend(get_cards_in_list(list))
+   print(cards)
+   return render_template('index.html', title='To Do App', tasks=cards)
 
 
 @app.route('/items/add', methods = ['POST'])
-def add_items():
-   
+def add_item():
    form_data = request.form
-   task = form_data["title"]
-   add_item(task)
-      
+   task_title = form_data["title"]
+   task_desc = form_data["description"]
+   task_due_date = form_data["duedate"]
+   print(f"Adding task with {task_title} {task_desc} {task_due_date}")
+   
+   
+   add_task(task_title, task_desc, task_due_date)  
+    
    return redirect('/')
 
 
@@ -30,25 +37,34 @@ def add_items():
 def complete_item():
    if request.method == 'POST':
       form_data = request.form
-      task_id = int(form_data["id"])
-      existing_item = get_item(task_id)
-      if (existing_item != None) and (existing_item['status'] != 'Completed'):
-         updated_item = { 'id': task_id, 'status': 'Completed', 'title': existing_item['title'] }
-         save_item(updated_item)
+      task_id = form_data["id"]
+      complete_task(task_id)
          
    return redirect('/')
 
 
-@app.route('/items/remove', methods = ['POST', 'GET'])
-def remove_items():
+     
+@app.route('/items/remove', methods = ['POST'])
+def remove_item():
    if request.method == 'POST':
       form_data = request.form
-      task_id = int(form_data["id"])
+      task_id = form_data["id"]
       
-      remove_item_by_id(task_id)
+      delete_task(task_id)
       
    return redirect('/')
 
 
+@app.route('/items/restart', methods = ['POST'])
+def restart_item():
+   if request.method == 'POST':
+      form_data = request.form
+      task_id = form_data["id"]
+      
+      reopen_task(task_id)
+      
+   return redirect('/')
+
 if __name__ == '__main__':
     app.run()
+
