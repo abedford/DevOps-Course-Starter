@@ -34,8 +34,6 @@ def get_all_cards_on_board():
     response = requests.get(get_cards_query)
     if (response.status_code == 200):
         json_response = response.json()
-    
-        print(json_response)
         
         for value in json_response:
             card_id = value['id']
@@ -45,10 +43,7 @@ def get_all_cards_on_board():
             response = requests.get(get_list_for_card_query)
             if (response.status_code == 200):
                 json_response_for_list = response.json()
-                print(json_response_for_list)
                 card_status = json_response_for_list['name']
-                print(f"Card status is {card_status}")
-
             new_task = Task(card_id, value['name'], value['desc'], card_status, value['due'])
             tasks.append(new_task)
 
