@@ -43,7 +43,10 @@
         </tr>
       </thead>
       <tbody>
-        {% for task in view_model.tasks %}
+        <tr>
+        <h3>Tasks to Do</h3>
+        </tr>
+        {% for task in view_model.get_to_do_items() %}
           <tr>
             <td>{{ task.id }}</td>
             <td>{{ task.title }}</td>
@@ -56,13 +59,85 @@
             </form></td>
 
             
+            
             <td>
-              {% if task.status != 'Done' %}
-              <form action="/items/complete" method = "POST">
+              {% if task.status == 'To Do' %}
+              <form action="/items/start" method = "POST">
                 <input type="hidden" name="id" value="{{ task.id }}"/>
-                <button type="submit" class="btn btn-primary">Complete</button>
+                <button type="submit" class="btn btn-primary">Start</button>
               </form>
-              {% endif %}
+            {% endif %}
+            </td>
+          </tr>
+        </tr>
+          {% endfor %}
+        </tbody>
+      </table>
+      <table class="table table-striped">
+        <thead>
+          <tr>
+            <th scope="col">Task ID</th>
+            <th scope="col">Task Name</th>
+            <th scope="col">Task Status</th>
+            <th scope="col">Description</th>
+            <th scope="col">Due Date</th>
+          </tr>
+        </thead>
+        <tbody>
+    <tr>
+      <h3>Tasks In Progress</h3>
+    </tr>
+      {% for task in view_model.get_doing_items() %}
+      <tr>
+        <td>{{ task.id }}</td>
+        <td>{{ task.title }}</td>
+        <td>{{ task.status }}</td>
+        <td>{{ task.description }}</td>
+        <td>{{ task.duedate }}</td>
+        <td><form action="/items/remove" method = "POST">
+          <input type="hidden" name="id" value="{{ task.id }}"/>
+          <button type="submit" class="btn btn-primary">Delete</button>
+        </form></td>
+        <td>
+          {% if task.status != 'Done' %}
+          <form action="/items/complete" method = "POST">
+            <input type="hidden" name="id" value="{{ task.id }}"/>
+            <button type="submit" class="btn btn-primary">Complete</button>
+          </form>
+          {% endif %}
+        </td>
+        
+      </tr>
+    </tr>
+      {% endfor %}
+      </tbody>
+  </table>
+          <table class="table table-striped">
+            <thead>
+              <tr>
+                <th scope="col">Task ID</th>
+                <th scope="col">Task Name</th>
+                <th scope="col">Task Status</th>
+                <th scope="col">Description</th>
+                <th scope="col">Due Date</th>
+              </tr>
+            </thead>
+            <tbody>
+        <tr>
+          <h3>Completed Tasks</h3>
+        </tr>
+          {% for task in view_model.get_done_items() %}
+          <tr>
+            <td>{{ task.id }}</td>
+            <td>{{ task.title }}</td>
+            <td>{{ task.status }}</td>
+            <td>{{ task.description }}</td>
+            <td>{{ task.duedate }}</td>
+            <td><form action="/items/remove" method = "POST">
+              <input type="hidden" name="id" value="{{ task.id }}"/>
+              <button type="submit" class="btn btn-primary">Delete</button>
+            </form></td>
+            <td>
               {% if task.status == 'Done' %}
               <form action="/items/restart" method = "POST">
                 <input type="hidden" name="id" value="{{ task.id }}"/>
@@ -73,6 +148,9 @@
           </tr>
         </tr>
           {% endfor %}
+          </tbody>
+      </table>
+     
   </div>
   
   

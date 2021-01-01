@@ -130,7 +130,18 @@ def complete_task(card_id):
     update_task(card_id, 'Done')
 
 """
-    Completes a task by moving it to the To Do list
+    Starts a task by moving it to the Doing list
+
+    Args:
+        card_id: The ID of the card to update.
+
+    """
+def start_task(card_id):
+    print("Starting a task")
+    update_task(card_id, 'Doing')
+
+"""
+    Reopens a task by moving it to the To Do list
 
     Args:
         card_id: The ID of the card to update.

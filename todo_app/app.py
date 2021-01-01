@@ -53,6 +53,16 @@ def remove_item():
    return redirect('/')
 
 
+@app.route('/items/start', methods = ['POST'])
+def start_item():
+   if request.method == 'POST':
+      form_data = request.form
+      task_id = form_data["id"]
+      
+      start_task(task_id)
+      
+   return redirect('/')
+
 @app.route('/items/restart', methods = ['POST'])
 def restart_item():
    if request.method == 'POST':
