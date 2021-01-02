@@ -8,6 +8,7 @@ class Task:
         self.status = status
         self.description = description
         self.duedate = duedate
+        self.modified_date = datetime.datetime.now()
 
     def is_doing(self):
         return self.status == "Doing"
@@ -15,6 +16,8 @@ class Task:
     def is_done(self):
         return self.status == "Done"
 
-    
     def is_to_do(self):
         return self.status == "To Do"
+
+    def set_mofidied_date(self, date):
+        self.modified = date

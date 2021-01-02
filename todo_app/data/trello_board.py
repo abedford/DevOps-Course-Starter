@@ -116,7 +116,23 @@ def update_task(card_id, list_name):
     response = requests.put(update_card_query)
     if (response.status_code == 200):
         print("Task updated successfully")
+
+        
     
+
+def get_last_modified_time_for_a_task(id):
+    modified_time = None
+    print(f"Getting the last modified time for card {id}")
+
+    time_query = f"https://api.trello.com/1/cards/{card_id}/dateLastActivity?key={api_key}&token={server_token}"
+
+    response = requests.put(time_query)
+    if (response.status_code == 200):
+        json_response = response.json()
+
+        modified_time = json_response["_value"]
+        
+    return modified_time   
 
 """
     Completes a task by moving it to the completed list
