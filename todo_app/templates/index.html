@@ -112,27 +112,30 @@
       {% endfor %}
       </tbody>
   </table>
-          <table class="table table-striped">
-            <thead>
-              <tr>
-                <th scope="col">Task ID</th>
-                <th scope="col">Task Name</th>
-                <th scope="col">Task Status</th>
-                <th scope="col">Description</th>
-                <th scope="col">Due Date</th>
-              </tr>
-            </thead>
-            <tbody>
-        <tr>
-          <h3>Completed Tasks</h3>
-        </tr>
-          {% for task in view_model.get_done_items() %}
+  
+  <table class="table table-striped">
+    <thead>
+      <tr>
+        <th scope="col">Task ID</th>
+        <th scope="col">Task Name</th>
+        <th scope="col">Task Status</th>
+        <th scope="col">Description</th>
+        <th scope="col">Due Date</th>
+        <th scope="col">Completed Date</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr>
+        <h3>Completed Tasks</h3>
+            
+          {% for task in view_model.get_recent_done_items() %}
           <tr>
             <td>{{ task.id }}</td>
             <td>{{ task.title }}</td>
             <td>{{ task.status }}</td>
             <td>{{ task.description }}</td>
             <td>{{ task.duedate }}</td>
+            <td>{{ task.modified_date }}</td>
             <td><form action="/items/remove" method = "POST">
               <input type="hidden" name="id" value="{{ task.id }}"/>
               <button type="submit" class="btn btn-primary">Delete</button>
@@ -146,11 +149,57 @@
             {% endif %}
             </td>
           </tr>
+          </tr>
+            {% endfor %}
         </tr>
-          {% endfor %}
+        
           </tbody>
       </table>
-     
+      
+        <details>
+        <summary>Older Tasks</summary>
+        
+        <table class="table table-striped">
+          <thead>
+            <tr>
+              <th scope="col">Task ID</th>
+              <th scope="col">Task Name</th>
+              <th scope="col">Task Status</th>
+              <th scope="col">Description</th>
+              <th scope="col">Due Date</th>
+              <th scope="col">Completed Date</th>
+            </tr>
+          </thead>
+          <tbody>
+      <tr>
+        {% for task in view_model.get_older_done_items() %}
+          <tr>
+            <td>{{ task.id }}</td>
+            <td>{{ task.title }}</td>
+            <td>{{ task.status }}</td>
+            <td>{{ task.description }}</td>
+            <td>{{ task.duedate }}</td>
+            <td>{{ task.modified_date }}</td>
+            <td><form action="/items/remove" method = "POST">
+              <input type="hidden" name="id" value="{{ task.id }}"/>
+              <button type="submit" class="btn btn-primary">Delete</button>
+            </form></td>
+            <td>
+              {% if task.status == 'Done' %}
+              <form action="/items/restart" method = "POST">
+                <input type="hidden" name="id" value="{{ task.id }}"/>
+                <button type="submit" class="btn btn-primary">Restart</button>
+              </form>
+            {% endif %}
+            </td>
+          </tr>
+          {% endfor %}
+        
+        </tr>
+          
+      </tbody>
+    </table>
+  </details>
   </div>
   
   

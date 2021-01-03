@@ -3,6 +3,7 @@ from todo_app.data.status import Status
 from todo_app.data.task import Task
 import requests
 import json
+import datetime
 
 import os
 from os.path import join, dirname
@@ -44,7 +45,8 @@ def get_all_cards_on_board():
             if (response.status_code == 200):
                 json_response_for_list = response.json()
                 card_status = json_response_for_list['name']
-            new_task = Task(card_id, value['name'], value['desc'], card_status, value['due'])
+            due_date, last_modified = calculate_due_date_and_last_modified_date(value['due'],value['dateLastActivity'])
+            new_task = Task(card_id, value['name'], value['desc'], card_status, due_date, last_modified)
             tasks.append(new_task)
 
     return tasks
@@ -72,6 +74,15 @@ def get_lists():
 
     return statuses
 
+def calculate_due_date_and_last_modified_date(due_date_str, last_modified_str):
+    due_date = None
+    last_modified = None
+    if due_date_str is not None:
+        due_date = datetime.datetime.strptime(due_date_str, '%Y-%m-%dT%H:%M:%S.%fZ')
+    if last_modified_str is not None:
+        last_modified = datetime.datetime.strptime(last_modified_str, '%Y-%m-%dT%H:%M:%S.%fZ')
+    return due_date, last_modified
+           
 def get_cards_in_list(list):
     tasks = []
     
@@ -81,7 +92,9 @@ def get_cards_in_list(list):
         json_response = response.json()
 
         for value in json_response:
-            new_task = Task(value['id'], value['name'], value['desc'], list.title, value['due'])
+            due_date, last_modified = calculate_due_date_and_last_modified_date(value['due'],value['dateLastActivity'])
+            
+            new_task = Task(value['id'], value['name'], value['desc'], list.title, due_date, last_modified)
             tasks.append(new_task)
 
     return tasks
@@ -117,7 +130,7 @@ def update_task(card_id, list_name):
     if (response.status_code == 200):
         print("Task updated successfully")
 
-        
+
     
 
 def get_last_modified_time_for_a_task(id):

@@ -7,7 +7,7 @@ from todo_app.flask_config import Config
 
 app = Flask(__name__)
 app.config.from_object(Config)
-
+item_view_model = None
 
 @app.route('/')
 def index():
@@ -29,7 +29,6 @@ def add_item():
    add_task(task_title, task_desc, task_due_date)  
     
    return redirect('/')
-
 
 @app.route('/items/complete', methods = ['POST', 'GET'])
 def complete_item():
