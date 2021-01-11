@@ -3,25 +3,30 @@ from todo_app.data.trello_board import *
 from todo_app.data.viewmodel import *
 from flask import Flask, render_template, request, redirect
 
-from todo_app.flask_config import Config
 
-
-
+    
 
 
 def create_app():
    app = Flask(__name__)
-   app.config.from_object(Config)
    item_view_model = None
+   board_id = os.getenv('BOARD_ID')
+   api_key = os.getenv('API_KEY')
+   server_token = os.getenv('SERVER_TOKEN')
+   trello_board = TrelloBoard(board_id, api_key, server_token)
    #  All the routes and setup code etc
 
 
    @app.route('/')
    def index():
-      cards = get_all_cards_on_board()
+      show_all = request.args.get('show_all')
+      
+      show_all_bool = show_all == "yes"
+      print(f"Show all value is {show_all_bool}")
+      cards = trello_board.get_all_cards_on_board()
       item_view_model = ViewModel(cards)
       return render_template('index.html', title='To Do App',
-         view_model=item_view_model)
+         view_model=item_view_model, show_all=show_all_bool)
 
 
    @app.route('/items/add', methods = ['POST'])
@@ -33,7 +38,7 @@ def create_app():
       print(f"Adding task with {task_title} {task_desc} {task_due_date}")
       
       
-      add_task(task_title, task_desc, task_due_date)  
+      trello_board.add_task(task_title, task_desc, task_due_date)  
       
       return redirect('/')
 
@@ -42,7 +47,7 @@ def create_app():
       if request.method == 'POST':
          form_data = request.form
          task_id = form_data["id"]
-         complete_task(task_id)
+         trello_board.complete_task(task_id)
             
       return redirect('/')
 
@@ -50,11 +55,13 @@ def create_app():
      
    @app.route('/items/remove', methods = ['POST'])
    def remove_item():
+
       if request.method == 'POST':
+         
          form_data = request.form
          task_id = form_data["id"]
-         
-         delete_task(task_id)
+         print(f"The form data for delete is: {form_data}")
+         trello_board.delete_task(task_id)
          
       return redirect('/')
 
@@ -65,7 +72,7 @@ def create_app():
          form_data = request.form
          task_id = form_data["id"]
          
-         start_task(task_id)
+         trello_board.start_task(task_id)
          
       return redirect('/')
 
@@ -75,7 +82,7 @@ def create_app():
          form_data = request.form
          task_id = form_data["id"]
          
-         reopen_task(task_id)
+         trello_board.reopen_task(task_id)
          
       return redirect('/')
 
@@ -83,7 +90,7 @@ def create_app():
    if __name__ == '__main__':
       app.run()
 
-      
+
    return app
 
 

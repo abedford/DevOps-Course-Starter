@@ -9,16 +9,6 @@ class ViewModel:
     def tasks(self):
         return self._tasks
 
-    @property
-    def show_all_done(self):
-        return self._show_all_done
-
-    @show_all_done.setter
-    def show_all_done(self, value):
-        self._show_all_done = value
-
-
-
     def get_to_do_items(self):
         to_dos = [task for task in self.tasks if task.is_to_do()]
         
@@ -44,18 +34,16 @@ class ViewModel:
     def get_recent_done_items(self):
         recent_items = []
         all_done_items = self.get_done_items()
-        if (len(all_done_items) < 6 or self.show_all_done):
-            print(f"Returning recent items as all done: {all_done_items} show_all_done {self.show_all_done}")
+        if len(all_done_items) < 6:
             return all_done_items
         else:
             for item in all_done_items:
                 
                 modified_time = item.modified_date
-                print(f"Modified time for task {item.id} is {modified_time}")
+                              
                 if(self.is_recently_modified(modified_time)):
                     recent_items.append(item)
         
-        print(f"Returning recent items: {recent_items}")
         return recent_items
 
 
@@ -65,9 +53,7 @@ class ViewModel:
 
         for item in all_done_items:
             modified_time = item.modified_date
-            print(f"Modified time for task {item.id} is {modified_time}")
             if not self.is_recently_modified(modified_time):
                 older_items.append(item)
-
-        print(f"Returning older items as all done: {older_items}")      
+      
         return older_items

@@ -127,8 +127,17 @@
     <tbody>
       <tr>
         <h3>Completed Tasks</h3>
-            
-          {% for task in view_model.get_recent_done_items() %}
+       
+      <!--<label class="switch">-->
+        {% if not show_all %}
+        <a href="/?show_all=yes">Show Older Completed Tasks</a>
+        {% else %}
+          <a href="/?show_all=no">Show Only Recent Tasks</a>
+        {% endif %}
+        <!--<span class="slider round"></span></input>
+      </label>-->  
+      {% if show_all %}
+          {% for task in view_model.get_done_items() %}
           <tr>
             <td>{{ task.id }}</td>
             <td>{{ task.title }}</td>
@@ -152,10 +161,37 @@
           </tr>
             {% endfor %}
         </tr>
-        
+      {% else %}
+        {% for task in view_model.get_recent_done_items() %}
+          
+        <tr>
+          <td>{{ task.id }}</td>
+          <td>{{ task.title }}</td>
+          <td>{{ task.status }}</td>
+          <td>{{ task.description }}</td>
+          <td>{{ task.duedate }}</td>
+          <td>{{ task.modified_date }}</td>
+          <td><form action="/items/remove" method = "POST">
+            <input type="hidden" name="id" value="{{ task.id }}"/>
+            <button type="submit" class="btn btn-primary">Delete</button>
+          </form></td>
+          <td>
+            {% if task.status == 'Done' %}
+            <form action="/items/restart" method = "POST">
+              <input type="hidden" name="id" value="{{ task.id }}"/>
+              <button type="submit" class="btn btn-primary">Restart</button>
+            </form>
+          {% endif %}
+          </td>
+        </tr>
+        </tr>
+          {% endfor %}
+      </tr> 
+      {% endif %}
           </tbody>
       </table>
       
+      {% if not show_all %}
         <details>
         <summary>Older Tasks</summary>
         
@@ -200,6 +236,7 @@
       </tbody>
     </table>
   </details>
+  {% endif %}
   </div>
   
   
