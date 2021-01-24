@@ -1,0 +1,4 @@
+1611497833454	geckodriver	INFO	Listening on 127.0.0.1:55887
+1611497836422	mozrunner::runner	INFO	Running command: "C:\\Program Files (x86)\\SentryBay\\MyDesk.exe" "--marionette" "-foreground" "-no-remote" "-profile" "C:\\Users\\ANNIE(~1\\AppData\\Local\\Temp\\rust_mozprofilevnkYoR"
+1611497851624	geckodriver	INFO	Listening on 127.0.0.1:55908
+1611497854596	mozrunner::runner	INFO	Running command: "C:\\Program Files (x86)\\SentryBay\\MyDesk.exe" "--marionette" "-foreground" "-no-remote" "-profile" "C:\\Users\\ANNIE(~1\\AppData\\Local\\Temp\\rust_mozprofileFvGvhe"

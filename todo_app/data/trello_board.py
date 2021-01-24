@@ -12,14 +12,41 @@ from dotenv import load_dotenv
 dotenv_path = join(dirname(__file__), '.env')
 load_dotenv(dotenv_path)
  
+
+
 class TrelloBoard:
 
-    def __init__(self, board_id, api_key, server_token):
-        self.board_id = board_id
+    def __init__(self, board_id, api_key, server_token, name):
         self.api_key = api_key
         self.server_token = server_token
 
+        if board_id is not None and name is not None:
+            print("If you specify a name, a new board will get created and the board_id is ignored")
+        
+        if not name == None:
+            self.board_id = self.create_new_board(name)
+        else:
+            self.board_id = board_id
 
+
+    def create_new_board(self, name):
+        board_id = None
+        create_board_query = f"https://api.trello.com/1/boards/?key={self.api_key}&token={self.server_token}&name={name}"
+        response = requests.post(create_board_query)
+        if (response.status_code == 200):
+            json_response = response.json()
+            # get the board id and return it
+            board_id = json_response["id"]
+            print(f"New board created successfully with {board_id}")
+        return board_id
+
+    def delete_board(self, id):
+        delete_board_query = f"https://api.trello.com/1/boards/{id}?key={self.api_key}&token={self.server_token}"
+        response = requests.delete(delete_board_query)
+        if (response.status_code == 200):
+            # get the board id and return it
+            print(f"Board {id} deleted successfully")
+    
     """
         Gets all the cards available on the board
 
