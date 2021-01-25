@@ -16,11 +16,11 @@
             <thead>
           
               <tr>
-                <td>Task Name <input type = "text" name = "title" required/></td>
-                <td>Task Description <input type = "text" name = "description" required/></td>
+                <td>Task Name <input type = "text" id = "task_title" name = "title" required/></td>
+                <td>Task Description <input type = "text" id = "task_description" name = "description" required/></td>
                 <td>Due Date <input type="date" name="duedate" value="2020-12-31" required></td>
 
-                <td><button type="submit" class="btn btn-primary">Add</button></td>
+                <td><button type="submit" class="btn btn-primary" id="add_task_button">Add</button></td>
               </tr>
           
             </thead>
@@ -55,7 +55,7 @@
             <td>{{ task.duedate }}</td>
             <td><form action="/items/remove" method = "POST">
               <input type="hidden" name="id" value="{{ task.id }}"/>
-              <button type="submit" class="btn btn-primary">Delete</button>
+              <button type="submit" class="btn btn-primary" name="delete-todo">Delete</button>
             </form></td>
 
             
@@ -64,7 +64,7 @@
               {% if task.status == 'To Do' %}
               <form action="/items/start" method = "POST">
                 <input type="hidden" name="id" value="{{ task.id }}"/>
-                <button type="submit" class="btn btn-primary">Start</button>
+                <button type="submit" class="btn btn-primary" name="start">Start</button>
               </form>
             {% endif %}
             </td>
@@ -102,7 +102,7 @@
           {% if task.status != 'Done' %}
           <form action="/items/complete" method = "POST">
             <input type="hidden" name="id" value="{{ task.id }}"/>
-            <button type="submit" class="btn btn-primary">Complete</button>
+            <button type="submit" class="btn btn-primary" name="complete">Complete</button>
           </form>
           {% endif %}
         </td>
@@ -147,13 +147,13 @@
             <td>{{ task.modified_date }}</td>
             <td><form action="/items/remove" method = "POST">
               <input type="hidden" name="id" value="{{ task.id }}"/>
-              <button type="submit" class="btn btn-primary">Delete</button>
+              <button type="submit" class="btn btn-primary" name="delete">Delete</button>
             </form></td>
             <td>
               {% if task.status == 'Done' %}
               <form action="/items/restart" method = "POST">
                 <input type="hidden" name="id" value="{{ task.id }}"/>
-                <button type="submit" class="btn btn-primary">Restart</button>
+                <button type="submit" class="btn btn-primary" name="restart">Restart</button>
               </form>
             {% endif %}
             </td>
@@ -173,13 +173,13 @@
           <td>{{ task.modified_date }}</td>
           <td><form action="/items/remove" method = "POST">
             <input type="hidden" name="id" value="{{ task.id }}"/>
-            <button type="submit" class="btn btn-primary">Delete</button>
+            <button type="submit" class="btn btn-primary" name="delete">Delete</button>
           </form></td>
           <td>
             {% if task.status == 'Done' %}
             <form action="/items/restart" method = "POST">
               <input type="hidden" name="id" value="{{ task.id }}"/>
-              <button type="submit" class="btn btn-primary">Restart</button>
+              <button type="submit" class="btn btn-primary" name="restart">Restart</button>
             </form>
           {% endif %}
           </td>

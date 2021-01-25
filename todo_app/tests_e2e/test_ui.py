@@ -2,10 +2,12 @@ import os
 from threading import Thread
 
 from todo_app.app import *
-from todo_app.data.trello_board import *
+from todo_app.data.trello_board import TrelloBoard
 from selenium import webdriver
 from selenium import webdriver
 from selenium.webdriver.chrome.options import Options
+from selenium.common.exceptions import NoSuchElementException
+import time
 
 import pytest
 
@@ -49,3 +51,56 @@ def test_task_journey(driver, test_app):
     driver.get('http://localhost:5000/')
 
     assert driver.title == 'To-Do App'
+
+    sample_text = "Test Task"
+    new_task_text_field = driver.find_element_by_id("task_title")
+    new_task_text_field.send_keys(sample_text)
+
+    sample_text = "Test Task Description"
+    new_task_text_field = driver.find_element_by_id("task_description")
+    new_task_text_field.send_keys(sample_text)
+    
+    print("Creating a new task")
+    driver.find_element_by_id("add_task_button").click()
+
+    time.sleep(5)
+
+    print("Starting the task")
+    driver.find_element_by_name("start").click()
+    
+    time.sleep(5)
+
+    print("Completing the task")
+    driver.find_element_by_name("complete").click()
+    time.sleep(5)
+
+
+    driver.find_element_by_name("restart").click()
+    time.sleep(5)
+
+    driver.find_element_by_name("delete-todo").click()
+    time.sleep(5)
+
+    try:
+        start_button = driver.find_element_by_name("start")
+        assert False, "Start button was found"
+    except NoSuchElementException:
+        assert True, "Start button was not found"
+        
+    try:
+        complete_button = driver.find_element_by_name("complete")
+        assert False, "Complete button was not found"
+    except NoSuchElementException:
+        assert True, "Complete button was not found"
+        
+    try:
+        restart_button = driver.find_element_by_name("restart")
+        assert False, "Restart button was not found"
+    except NoSuchElementException:
+        assert True, "Restart button was not found"
+
+
+    
+
+    
+  
