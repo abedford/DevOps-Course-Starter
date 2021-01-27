@@ -12,8 +12,6 @@ from dotenv import load_dotenv
 dotenv_path = join(dirname(__file__), '.env')
 load_dotenv(dotenv_path)
  
-
-
 class TrelloBoard:
 
     def __init__(self, board_id, api_key, server_token, name):
@@ -21,7 +19,8 @@ class TrelloBoard:
         self.server_token = server_token
 
         if board_id is not None and name is not None:
-            print("If you specify a name, a new board will get created and the board_id is ignored")
+            print("If you specify a name, a new board will not get created and the board name will be ignored")
+            name = None
         
         if not name == None:
             self.board_id = self.create_new_board(name)
@@ -46,6 +45,9 @@ class TrelloBoard:
         if (response.status_code == 200):
             # get the board id and return it
             print(f"Board {id} deleted successfully")
+            return True
+        else:
+            return False
     
     """
         Gets all the cards available on the board
@@ -110,23 +112,6 @@ class TrelloBoard:
         if last_modified_str is not None:
             last_modified = datetime.datetime.strptime(last_modified_str, '%Y-%m-%dT%H:%M:%S.%fZ')
         return due_date, last_modified
-            
-    def get_cards_in_list(self, list):
-        tasks = []
-        
-        get_cards_query = f"https://api.trello.com/1/lists/{list.id}/cards?key={self.api_key}&token={self.server_token}"
-        response = requests.get(get_cards_query)
-        if (response.status_code == 200):
-            json_response = response.json()
-
-            for value in json_response:
-                due_date, last_modified = self.calculate_due_date_and_last_modified_date(value['due'],value['dateLastActivity'])
-                
-                new_task = Task(value['id'], value['name'], value['desc'], list.title, due_date, last_modified)
-                tasks.append(new_task)
-
-        return tasks
-
 
     def get_list_id_from_name(self, list_name):
         lists = self.get_lists()
@@ -157,23 +142,6 @@ class TrelloBoard:
         response = requests.put(update_card_query)
         if (response.status_code == 200):
             print("Task updated successfully")
-
-
-        
-
-    def get_last_modified_time_for_a_task(self, id):
-        modified_time = None
-        print(f"Getting the last modified time for card {id}")
-
-        time_query = f"https://api.trello.com/1/cards/{id}/dateLastActivity?key={self.api_key}&token={self.server_token}"
-
-        response = requests.put(time_query)
-        if (response.status_code == 200):
-            json_response = response.json()
-
-            modified_time = json_response["_value"]
-            
-        return modified_time   
 
     """
         Completes a task by moving it to the completed list

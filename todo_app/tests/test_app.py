@@ -8,6 +8,7 @@ import os
 
 
 add_card_data = {'title': 'new card', 'description': 'new card desc', 'duedate': '2020-12-31T00:00:00.000Z'}
+
 @pytest.fixture
 def client():
     # Use our test integration config instead of the 'real' version
@@ -56,8 +57,8 @@ def test_complete_task(mock_put_requests, mock_get_requests, client):
     response = client.post('/items/complete', data=data)
 
     assert response.status_code == 302
-    
 
+    
 @patch('requests.delete')
 def test_remove_task(mock_post_requests, client):
 
@@ -108,6 +109,15 @@ def mock_delete_card(url):
         response = Mock(ok=True)
         response.status_code = 200
         response.json.return_value = sample_trello_cards_response
+        return response
+
+def mock_delete_board(url):
+    api_key = os.getenv('API_KEY')
+    server_token = os.getenv('SERVER_TOKEN')
+    if url ==  f"https://api.trello.com/1/boards/b1?key={api_key}&token={server_token}":
+        response = Mock(ok=True)
+        response.status_code = 400
+        response.json.return_value = None
         return response
 
 def mock_get_lists(url):
