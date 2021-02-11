@@ -3,11 +3,14 @@ from todo_app.data.trello_board import *
 from todo_app.data.viewmodel import *
 from flask import Flask, render_template, request, redirect
 
-
-def create_app(board):
+def create_app():
    app = Flask(__name__)
    item_view_model = None
-   
+
+   board_id = os.getenv('BOARD_ID')
+   api_key = os.getenv('API_KEY')
+   server_token = os.getenv('SERVER_TOKEN')
+   board = TrelloBoard(board_id, api_key, server_token)
    #  All the routes and setup code etc
 
 

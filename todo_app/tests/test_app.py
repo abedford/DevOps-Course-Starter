@@ -1,11 +1,10 @@
-from todo_app.app import *
-from dotenv.main import find_dotenv, load_dotenv
-
+import os
+from unittest.mock import Mock, patch
 
 import pytest
-from unittest.mock import patch, Mock
-import os
+from dotenv.main import find_dotenv, load_dotenv
 
+from todo_app.app import *
 
 add_card_data = {'title': 'new card', 'description': 'new card desc', 'duedate': '2020-12-31T00:00:00.000Z'}
 
@@ -14,13 +13,10 @@ def client():
     # Use our test integration config instead of the 'real' version
     file_path = find_dotenv('.env.test')
     load_dotenv(file_path, override=True)
-    board_id = os.getenv('BOARD_ID')
-    api_key = os.getenv('API_KEY')
-    server_token = os.getenv('SERVER_TOKEN')
-    trello_board = TrelloBoard(board_id = board_id, api_key = api_key, server_token = server_token, name=None)
-
+    
+    
     # Create the new app.
-    test_app = create_app(trello_board)
+    test_app = create_app()
     # Use the app to create a test_client that can be used in our tests.
     with test_app.test_client() as client:
         yield client

@@ -14,23 +14,24 @@ load_dotenv(dotenv_path)
  
 class TrelloBoard:
 
-    def __init__(self, board_id, api_key, server_token, name):
+    def __init__(self, board_id, api_key, server_token):
         self.api_key = api_key
         self.server_token = server_token
+        self.board_id = board_id
 
-        if board_id is not None and name is not None:
-            print("If you specify a name, a new board will not get created and the board name will be ignored")
-            name = None
+        #f board_id is not None and name is not None:
+        #    print("If you specify an ID, a new board will not get created and the board name will be ignored")
+        #    name = None
         
-        if not name == None:
-            self.board_id = self.create_new_board(name)
-        else:
-            self.board_id = board_id
+        #if not name == None:
+        #    self.board_id = self.create_new_board(name)
+        #else:
+        
 
-
-    def create_new_board(self, name):
+    @staticmethod
+    def create_new_board(api_key, server_token, name):
         board_id = None
-        create_board_query = f"https://api.trello.com/1/boards/?key={self.api_key}&token={self.server_token}&name={name}"
+        create_board_query = f"https://api.trello.com/1/boards/?key={api_key}&token={server_token}&name={name}"
         response = requests.post(create_board_query)
         if (response.status_code == 200):
             json_response = response.json()
@@ -39,8 +40,9 @@ class TrelloBoard:
             print(f"New board created successfully with {board_id}")
         return board_id
 
-    def delete_board(self, id):
-        delete_board_query = f"https://api.trello.com/1/boards/{id}?key={self.api_key}&token={self.server_token}"
+    @staticmethod
+    def delete_board(api_key, server_token, id):
+        delete_board_query = f"https://api.trello.com/1/boards/{id}?key={api_key}&token={server_token}"
         response = requests.delete(delete_board_query)
         if (response.status_code == 200):
             # get the board id and return it
