@@ -58,3 +58,19 @@ Put the details in the .env file
 API_KEY=XXX
 SERVER_TOKEN=XXX
 BOARD_ID=XXX
+
+## Running the tests
+To run the tests 
+```bash
+$ poetry run pytest
+```
+
+To run test coverage 
+```bash
+$ poetry run pytest --cov=report term-missing --cov=tests
+```
+
+The UI tests are in a folder called tests_e2e and can be run separately, or not at all if you want the tests to complete more quickly. 
+They rely on chrome browser and chrome driver being available and being added to the path. 
+
+A few tests will actually connect directly to trello with your API key and server token to create a temporary board but this will be deleted as part of the test tear down. Other tests will just use dummy board data. 
