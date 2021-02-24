@@ -18,14 +18,6 @@ class TrelloBoard:
         self.api_key = api_key
         self.server_token = server_token
         self.board_id = board_id
-
-        #f board_id is not None and name is not None:
-        #    print("If you specify an ID, a new board will not get created and the board name will be ignored")
-        #    name = None
-        
-        #if not name == None:
-        #    self.board_id = self.create_new_board(name)
-        #else:
         
 
     @staticmethod

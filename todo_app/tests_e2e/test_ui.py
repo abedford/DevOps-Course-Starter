@@ -62,20 +62,15 @@ def test_task_journey(driver, test_app):
     print("Creating a new task")
     driver.find_element_by_id("add_task_button").click()
 
-    #time.sleep(5)
-
     print("Starting the task")
     driver.find_element_by_name("start").click()
-    
-    #time.sleep(5)
+
 
     print("Completing the task")
     driver.find_element_by_name("complete").click()
-    #time.sleep(5)
 
 
     driver.find_element_by_name("restart").click()
-    #time.sleep(5)
 
     driver.find_element_by_name("delete-todo").click()
     time.sleep(1)
