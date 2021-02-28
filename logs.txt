@@ -1,0 +1,8 @@
+ * Serving Flask app "todo_app/app" (lazy loading)
+ * Environment: development
+ * Debug mode: on
+ * Running on http://0.0.0.0:5000/ (Press CTRL+C to quit)
+ * Restarting with stat
+ * Debugger is active!
+ * Debugger PIN: 639-952-983
+10.0.2.2 - - [28/Feb/2021 18:27:19] "[37mGET / HTTP/1.1[0m" 200 -

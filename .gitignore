@@ -121,3 +121,6 @@ env/
 
 ### UI testing driver ###
 chromedriver.exe
+
+### Vagrant files ###
+.vagrant/
