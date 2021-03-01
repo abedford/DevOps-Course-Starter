@@ -99,8 +99,7 @@ xz-utils tk-dev libffi-dev liblzma-dev python-openssl git
 
     cd /vagrant && poetry install
     #nohup poetry run flask run --host 0.0.0.0 > logs.txt 2>&1 &
-    pip install gunicorn
-    nohup poetry run gunicorn -b 0.0.0.0:5000 todo_app.wsgi:wsgi_app
+    poetry run gunicorn --daemon -b 0.0.0.0:5000 todo_app.wsgi:wsgi_app --log-file gunicorn_logs.txt
     "}
   end
 
