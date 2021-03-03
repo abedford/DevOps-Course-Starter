@@ -99,6 +99,7 @@ xz-utils tk-dev libffi-dev liblzma-dev python-openssl git
 
     cd /vagrant && poetry install
     #nohup poetry run flask run --host 0.0.0.0 > logs.txt 2>&1 &
+    export `cat .env | grep '^[A-Z]' | xargs` # export the .env file in to environment variables that gunicorn can use
     poetry run gunicorn --daemon -b 0.0.0.0:5000 todo_app.wsgi:wsgi_app --log-file gunicorn_logs.txt
     "}
   end
