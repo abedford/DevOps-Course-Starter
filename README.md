@@ -81,3 +81,11 @@ $ poetry run pytest --cov=report term-missing --cov=tests
 The UI tests are in a folder called tests_e2e and can be run separately, or not at all if you want the tests to complete more quickly. They rely on chrome browser and chrome driver being available and being added to the path.
 
 A few tests will actually connect directly to trello with your API key and server token to create a temporary board but this will be deleted as part of the test tear down. Other tests will just use dummy board data.
+
+
+## Running in Vagrant
+If you install Vagrant, you can run the application in its own vm. Just install Vagrant from https://www.vagrantup.com/docs/installation and then run the following command in the DevOps-Course-Starter direction
+```bash
+$ vagrant up
+
+```
