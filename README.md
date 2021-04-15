@@ -96,10 +96,18 @@ $ docker build --tag todo-app .
 
 to build the application and then to run it run:
 ```bash
-$ docker run todo-app -p 5000
+$  docker run -p 5000:5000 --env-file env.list todo-app
 ```
 
 You should then be able to see the application as usual at 127.0.0.1:5000
+You will need to make sure you create env.list as a file to put your environment variables in, this needs to include:
+API_KEY=XXX
+SERVER_TOKEN=XXX
+BOARD_ID=XXX
+as before. This won't get checked in.
 
 
 You will need to install Docker Desktop for Windows. 
+
+## Code Documentation
+You will find the code documentation diagrams under the documentation folder. These are in C4 model format so show the system context, containter and component architecture as well as a UML diagram for the code.
