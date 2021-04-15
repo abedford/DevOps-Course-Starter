@@ -1,0 +1,65 @@
+@startuml
+scale 3
+class task {
+    +id: string
+    +title: string
+    +status: status
+    +description: string
+    +duedate: DateTime
+    +modified_date: DateTime
+    +__init__( in id : string, in title : string, in description : string, in status : status, in duedate : datetime, in modified_date : datetime)
+    +is_done() : boolean
+    +is_to_do() : boolean
+    +is_doing() : boolean
+
+}
+
+class status {
+    +id: string
+    +title: string
+    +__init__( in id : string, in title : string)
+}
+
+class trello_board {
+    +api_key: string
+    +server_token: string
+    +board_id: string
+    +__init__(in board_id : string, in api_key : string, in server_token : string)
+    {static} +create_new_board(in api_key : string, in server_token : string, in name : string) : string
+    {static} +delete_board(in api_key : string, in server_token : string, in id : string) : boolean
+    +get_all_cards_on_board() : task[] 
+    +get_lists() : status[] 
+    +calculate_due_date_and_last_modified_date(in due_date_str : string, in last_modified_str : string) : (due_date,last_modified)
+    +get_list_id_from_name(in list_name : string) : string 
+    +update_task(in card_id : string, in list_name : string)
+    +complete_task(in card_id : string)
+    +start_task(in card_id : string)
+    +reopen_task(in card_id : string)
+    +delete_task(in card_id : string)
+    +add_task(in task_name : string, in description : string, in duedate : datetime)
+
+}
+
+class viewmodel {
+    +tasks: task[]
+    +show_all_done: boolean
+    +__init__()
+    +tasks() : task[]
+    +get_to_do_items() : task[] 
+    +get_doing_items() : task[] 
+    +get_done_items() : task[] 
+    +is_recently_modified(in time : datetime) : boolean 
+    +get_recent_done_items() : task[] 
+    +get_older_done_items() : task[] 
+}
+
+class app {
+
+    +create_app()
+}
+
+trello_board -- "*" task
+task "1" -- "1" status
+app "1" -- "1" viewmodel
+viewmodel "1" o-- "*" task
+@enduml
