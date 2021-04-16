@@ -89,17 +89,29 @@ If you install Vagrant, you can run the application in its own vm. Just install 
 $ vagrant up
 
 ## Running in Docker
-If you want to build and run a docker image of this application you can run:
+If you want to build and run a docker image of this application using a single stage DockerFile you can backup existing Dockerfile and rename Dockerfile.singlestage to Dockerfile and then run:
 ```bash
 $ docker build --tag todo-app .
 ```
 
 to build the application and then to run it run:
 ```bash
-$ docker run todo-app -p 5000
+$ docker run -p 5000:5000 --env-file ./.env todo-app
 ```
 
 You should then be able to see the application as usual at 127.0.0.1:5000
 
 
 You will need to install Docker Desktop for Windows. 
+
+If you want to build and run a docker image of this application using a multi-stage DockerFile you can run:
+```bash
+$ docker build --tag todo-app --target production .
+```
+for a production image 
+
+or 
+```bash
+$ docker build --tag todo-app --target development .
+```
+for a development image. 

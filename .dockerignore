@@ -3,6 +3,8 @@
 **/.dockerignore
 **/.env*
 **/.git
+**/.github
+**/.pytest_cache
 **/.gitignore
 **/.project
 **/.settings
@@ -28,3 +30,5 @@ chromedriver.exe
 gunicorn_logs.txt
 Vagrantfile
 logs.txt
+.venv
+.vagrant
