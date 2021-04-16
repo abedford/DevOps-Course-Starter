@@ -126,5 +126,3 @@ chromedriver.exe
 .vagrant/
 gunicorn_logs.txt
 
-### Docker env files ###
-env.list
