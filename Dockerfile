@@ -38,3 +38,8 @@ FROM builder-base as development
 COPY ./todo_app /todo_app/todo_app
 EXPOSE 5000
 CMD ["poetry", "run", "flask", "run", "--host", "0.0.0.0" ]
+
+
+FROM builder-base as test
+COPY ./todo_app/tests /todo_app/todo_app/tests
+CMD ["poetry", "run", "pytest"]

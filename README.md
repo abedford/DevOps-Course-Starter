@@ -60,11 +60,6 @@ SERVER_TOKEN=XXX
 BOARD_ID=XXX
 
 ## Running the tests
-```bash
-$ poetry run pytest
-```
-
-## Running the tests
 
 To run the tests
 
