@@ -5,7 +5,7 @@ FROM python:3.8-slim-buster as python-base
 ENV PYTHONDONTWRITEBYTECODE=1 \
 # Turns off buffering for easier container logging
 PYTHONUNBUFFERED=1 \
-POETRY_VERSION=1.0.0 \
+POETRY_VERSION=1.1.4 \
  # make poetry install to this location
 POETRY_HOME="/poetry"
 
@@ -41,5 +41,5 @@ CMD ["poetry", "run", "flask", "run", "--host", "0.0.0.0" ]
 
 
 FROM builder-base as test
-COPY ./todo_app/tests /todo_app/todo_app/tests
+COPY ./todo_app /todo_app/todo_app
 CMD ["poetry", "run", "pytest"]
