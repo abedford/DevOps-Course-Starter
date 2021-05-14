@@ -42,13 +42,8 @@ def test_app():
 
 @pytest.fixture(scope="module")
 def driver():
-    options = Options()
-    options.add_argument("--headless") 
-    options.add_argument("--no-sandbox") #bypass OS security model
-    options.add_argument("--disable-dev-shm-usage") #overcome limited resource problems
-
-   
-    with webdriver.Chrome(options=options) as driver:
+    
+    with webdriver.Chrome() as driver:
         yield driver
 
 def test_task_journey(driver, test_app):

@@ -60,6 +60,11 @@ SERVER_TOKEN=XXX
 BOARD_ID=XXX
 
 ## Running the tests
+```bash
+$ poetry run pytest
+```
+
+## Running the tests
 
 To run the tests
 
@@ -82,45 +87,5 @@ A few tests will actually connect directly to trello with your API key and serve
 If you install Vagrant, you can run the application in its own vm. Just install Vagrant from https://www.vagrantup.com/docs/installation and then run the following command in the DevOps-Course-Starter direction
 ```bash
 $ vagrant up
+
 ```
-
-## Running in Docker
-If you want to build and run a docker image of this application using a single stage DockerFile you can backup existing Dockerfile and rename Dockerfile.singlestage to Dockerfile and then run:
-```bash
-$ docker build --tag todo-app .
-```
-
-to build the application and then to run it run:
-```bash
-$ docker run -p 5000:5000 --env-file ./.env todo-app
-```
-
-You should then be able to see the application as usual at 127.0.0.1:5000
-
-
-You will need to install Docker Desktop for Windows. 
-
-If you want to build and run a docker image of this application using a multi-stage DockerFile you can run:
-```bash
-$ docker build --tag todo-app-prod --target production .
-```
-for a production image 
-
-or 
-```bash
-$ docker build --tag todo-app-dev --target development .
-```
-for a development image. 
-
-And then to run it:
-
-for production
-```bash
-$ docker run -p 5000:5000 --env-file .env todo-app-prod
-```
-
-for development
-```bash
-$ docker run -p 5000:5000 --mount type=bind,source="C:\Projects\DevOps-Course-Starter\todo_app",target="/todo_app/todo_app" --env-file .env todo-app
-```
-This sets up the port forwarding and passes the .env file through to set up the flask environment paramenters. It also sets up a bind mount so that any changes in the source code will automatically be picked up with auto reload. 
