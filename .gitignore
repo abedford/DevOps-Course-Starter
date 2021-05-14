@@ -125,3 +125,4 @@ chromedriver.exe
 ### Vagrant files ###
 .vagrant/
 gunicorn_logs.txt
+
