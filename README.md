@@ -124,3 +124,25 @@ for development
 $ docker run -p 5000:5000 --mount type=bind,source="C:\Projects\DevOps-Course-Starter\todo_app",target="/todo_app/todo_app" --env-file .env todo-app
 ```
 This sets up the port forwarding and passes the .env file through to set up the flask environment paramenters. It also sets up a bind mount so that any changes in the source code will automatically be picked up with auto reload. 
+
+For testing you can run
+```bash
+$ docker build --tag todo-app-test --target test .
+```
+This will create a test container that can run your tests.
+
+To run it
+```bash
+$ docker run --env-file .env todo-app-test
+```
+This should return the results of your tests
+
+To debug in to this container (or another one) you can run:
+```bash
+$ docker run -it --entrypoint /bin/bash todo-app-test
+```
+
+and then from within the container you can run the tests:
+```bash
+$ poetry run pytest
+```
