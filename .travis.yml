@@ -1,2 +1,2 @@
 script:
-  - echo "hello world"
+  docker build --tag todo-app-dev --target development .
