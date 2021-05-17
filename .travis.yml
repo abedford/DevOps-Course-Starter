@@ -1,5 +1,11 @@
 service:
   - docker
+
+before_install:
+  - echo "$API_KEY"
+  - echo "$BOARD_ID"
+  - echo "$SERVER_TOKEN"
+
 script:
   - docker build --tag todo-app-dev --target development .
   - docker build --tag todo-app-test --target test .
