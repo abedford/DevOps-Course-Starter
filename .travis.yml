@@ -1,2 +1,5 @@
 script:
   docker build --tag todo-app-dev --target development .
+
+notifications:
+  slack: abedford:rnwlvKJWpYiqLV1ONVi51o8m
