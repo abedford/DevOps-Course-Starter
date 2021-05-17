@@ -1,9 +1,6 @@
 services:
   - docker
-
-before_install:
-  - echo "hello"
-
+  
 script:
   - docker build --tag todo-app-dev --target development .
   - docker build --tag todo-app-test --target test .
