@@ -1,7 +1,10 @@
+service:
+  - docker
 script:
-  docker build --tag todo-app-dev --target development .
-  docker build --tag todo-app-test --target test .
-  docker run --env-file .env todo-app-test
+  - docker build --tag todo-app-dev --target development .
+  - docker build --tag todo-app-test --target test .
+  - docker run --env-file .env todo-app-test
+
 
 notifications:
   slack: abedford:rnwlvKJWpYiqLV1ONVi51o8m
