@@ -1,6 +1,9 @@
 services:
   - docker
-  
+
+before_install:
+  env
+
 script:
   - docker build --tag todo-app-dev --target development .
   - docker build --tag todo-app-test --target test .
