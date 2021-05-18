@@ -1,14 +1,10 @@
 services:
   - docker
-
-before_install:
-  - echo %API_KEY%
-  - echo %SERVER_TOKEN%
-
+  
 script:
   - docker build --tag todo-app-dev --target development .
   - docker build --tag todo-app-test --target test .
-  - docker run --env-file .env todo-app-test
+  - docker run -e API_KEY -e SERVER_TOKEN -e BOARD_ID todo-app-test
 
 notifications:
   slack: abedford:rnwlvKJWpYiqLV1ONVi51o8m
