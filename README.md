@@ -133,11 +133,11 @@ This will create a test container that can run your tests.
 
 To run the tests
 ```bash
-$ docker run --env-file .env todo-app-test
+$ docker run --env-file .env.test todo-app-test
 ```
 This should return the results of your tests
 
-To just run the integration tests
+To just run the UI tests
 ```bash
 $ docker run --env-file .env todo-app-test todo_app/tests_e2e
 
