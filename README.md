@@ -133,7 +133,7 @@ This will create a test container that can run your tests.
 
 To run the tests
 ```bash
-$ docker run --env-file .env.test todo-app-test
+$ docker run --env-file .env.test todo-app-test todo_app/tests
 ```
 This should return the results of your tests
 
