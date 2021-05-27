@@ -96,9 +96,11 @@ $ docker run -p 5000:5000 --env-file ./.env todo-app
 ```
 
 You should then be able to see the application as usual at 127.0.0.1:5000
-
-
-You will need to install Docker Desktop for Windows. 
+You will need to make sure you create env.list as a file to put your environment variables in, this needs to include:
+API_KEY=XXX
+SERVER_TOKEN=XXX
+BOARD_ID=XXX
+as before. This won't get checked in.
 
 If you want to build and run a docker image of this application using a multi-stage DockerFile you can run:
 ```bash
@@ -150,3 +152,6 @@ and then from within the container you can run the tests:
 ```bash
 $ poetry run pytest
 ```
+## Code Documentation
+You will find the code documentation diagrams under the documentation folder. These are in C4 model format so show the system context, containter and component architecture as well as a UML diagram for the code.
+
