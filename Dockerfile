@@ -1,5 +1,5 @@
 # For more information, please refer to https://aka.ms/vscode-docker-python
-FROM python:3.8-slim-buster as python-base
+FROM python:3.9-slim-buster as python-base
 
 # Keeps Python from generating .pyc files in the container
 ENV PYTHONDONTWRITEBYTECODE=1 \
@@ -60,4 +60,4 @@ RUN CHROME_MAJOR_VERSION=$(google-chrome --version | sed -E "s/.* ([0-9]+)(\.[0-
   && unzip /tmp/chromedriver_linux64.zip -d /usr/bin \
   && rm /tmp/chromedriver_linux64.zip \
   && chmod 755 /usr/bin/chromedriver
-CMD ["poetry", "run", "pytest"]
+ENTRYPOINT ["poetry", "run", "pytest"]
