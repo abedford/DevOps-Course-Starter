@@ -4,6 +4,8 @@ script:
 - docker build --tag todo-app-dev --target development .
 - docker build --tag todo-app-test --target test .
 - docker run -e API_KEY -e SERVER_TOKEN -e BOARD_ID todo-app-test
+- echo DOCKER_USER
+- echo DOCKER_PW
 - echo DOCKER_PW | docker login -u DOCKER_USER --password-stdin
 notifications:
   slack:
