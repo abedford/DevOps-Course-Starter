@@ -1,0 +1,9 @@
+services:
+- docker
+script:
+- docker build --tag todo-app-dev --target development .
+- docker build --tag todo-app-test --target test .
+- docker run -e API_KEY -e SERVER_TOKEN -e BOARD_ID todo-app-test
+notifications:
+  slack:
+    secure: HJQ/XLQJ4fgGY53qi/UMQ0waUvL+gyKKMUoBj8cCOF2P8zzxGw8/fpWAFaivyqfjs1qRrSX4tg+YBWkmTsJ/MQpKBlPNyUtwfaMbYlQCMaDk15jbkyisehgUDac0djOhyuHgaZMeXOpH+U3O7n1tOxigY7ey57GgMQv8gxHtaMhT/qLP/bokMy1QplVlzg2+OAAp0lUS1B76GWTLd498DDifukvBKMqq3nnEW6s3iGMCP2zG/SNUWfFHcZcilWQzT5XGqZ2/fKr20ROGR56UB6uC75fHx4s1gobz345MmsrvmeBa7ptHnNL/3JFxTM7cW52jQfvYeekHwJY/ScnGAM2/1sXkLpFiQN8yqydbd0o7/7rWdEGEWIaT3/bXg+RW213rYOV3h5vAJcUYKYAiDH29xMxXI29LoQet/oe2gxVPFORQ0kj3QJ9Tk2VvlnhFKjjvuCl2mZfVxocmZUNbJykd9cEkANKhyUvuQG94kQ4zP8e7y7pdUpLhViTlKN0WgKRxxADK54VWMgZIxYCtx8TUOPTBLKSQhcO5e/Cri57dpgoo8dPNZg8A3tmdHpctuwTWCkiFd/VLzaB4En+QggDitIDu2t9g/uSwI6Q0EokyQFw0j8qNA5tHQmhO5NiHJSEVAv7ceV0hMUL4AG/EJ3I4GDk3p1i6HeOTJUxkMLQ=
