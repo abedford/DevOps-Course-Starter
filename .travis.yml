@@ -12,8 +12,8 @@ deploy:
   skip_cleanup: true
   provider: script
   script: bash docker_push
-on:
-  branch: main
+  on:
+    branch: main
   
 notifications:
   slack:
