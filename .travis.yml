@@ -3,7 +3,7 @@ services:
 script:
 - docker build --tag todo-app-dev --target development .
 - docker build --tag todo-app-test --target test .
-- docker build --target production --tag todo-app-prod . 
+- docker build --target production --tag anniebedford/todo-app-prod . 
 #docker push registry.heroku.com/devops-dotnet/web
 - docker run -e API_KEY -e SERVER_TOKEN -e BOARD_ID todo-app-test
 #- echo $DOCKER_PW | docker login -u $DOCKER_USER --password-stdin
