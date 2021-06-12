@@ -1,0 +1,5 @@
+#!/bin/bash
+echo "$DOCKER_PW" | docker login -u "$DOCKER_USER" --password-stdin
+docker push anniebedford/todo-app-prod:latest
+
+#- echo $DOCKER_PW | docker login -u $DOCKER_USER --password-stdin
