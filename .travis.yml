@@ -9,10 +9,11 @@ script:
 #- echo $DOCKER_PW | docker login -u $DOCKER_USER --password-stdin
 
 deploy:
+  skip_cleanup: true
   provider: script
   script: bash docker_push
-  on:
-    branch: main
+#on:
+#    branch: main
   
 notifications:
   slack:
