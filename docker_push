@@ -4,7 +4,7 @@ echo "$DOCKER_PW" | docker login -u "$DOCKER_USER" --password-stdin
 docker push anniebedford/todo-app-prod:latest
 docker push anniebedford/todo-app-prod:$TRAVIS_COMMIT
 
-docker login --username=_ --password=$HEROKU_AUTH_TOKEN registry.heroku.com
+docker login --username=anniebedford --password=$HEROKU_AUTH_TOKEN registry.heroku.com
 docker tag anniebedford/todo-app-prod registry.heroku.com/todo-app-ab/web
 docker push registry.heroku.com/todo-app-ab/web
 heroku container:release web -a todo-app-ab
