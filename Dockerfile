@@ -30,9 +30,9 @@ RUN poetry config virtualenvs.create false \
 
 FROM builder-base as production
 COPY ./todo_app /todo_app/todo_app
-RUN chmod +x ./entrypoint.sh
+RUN chmod +x ./todo_app/entrypoint.sh
 EXPOSE 5000
-ENTRYPOINT ["./entrypoint.sh"]
+ENTRYPOINT ["./todo_app/entrypoint.sh"]
 
 
 FROM builder-base as development
