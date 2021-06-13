@@ -31,7 +31,7 @@ RUN poetry config virtualenvs.create false \
 FROM builder-base as production
 COPY ./todo_app /todo_app/todo_app
 EXPOSE 5000
-CMD ["poetry", "run", "gunicorn", "--bind", "0.0.0.0:5000", "todo_app.wsgi:wsgi_app", "--log-file", "gunicorn_logs_docker.txt" ]
+CMD ["poetry", "run", "gunicorn", "--bind", "0.0.0.0:$PORT", "todo_app.wsgi:wsgi_app", "--log-file", "gunicorn_logs_docker.txt" ]
 
 
 FROM builder-base as development

@@ -1,8 +1,5 @@
 #!/bin/bash
-#- docker build --target production --tag anniebedford/todo-app-prod .
 docker build --target production --tag anniebedford/todo-app-prod:latest --tag anniebedford/todo-app-prod:$TRAVIS_COMMIT  .
 echo "$DOCKER_PW" | docker login -u "$DOCKER_USER" --password-stdin
 docker push anniebedford/todo-app-prod:latest
 docker push anniebedford/todo-app-prod:$TRAVIS_COMMIT
-
-#- echo $DOCKER_PW | docker login -u $DOCKER_USER --password-stdin
