@@ -7,6 +7,6 @@ docker tag anniebedford/todo-app-prod registry.heroku.com/todo-app-ab/web
 
 
 #echo "$HEROKU_AUTH_TOKEN" | docker login --username=_ registry.heroku.com --password-stdin
-echo "$HEROKU_API_KEY" | docker login --username=_ registry.heroku.com   --password-stdin
+echo "$HEROKU_AUTH_TOKEN" | docker login --username=_ registry.heroku.com   --password-stdin
 docker push registry.heroku.com/todo-app-ab/web
 heroku container:release web -a todo-app-ab
