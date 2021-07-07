@@ -19,6 +19,7 @@ def test_app():
     mongo_srv = os.getenv('MONGO_SRV')
     mongo_user = os.getenv('MONGO_USER')
     mongo_pwd = os.getenv('MONGO_PWD')
+    print(f"The parameters are {mongo_srv}, {mongo_user}, {mongo_pwd}")
 
     mongo_client = ToDoMongoClient(mongo_user, mongo_pwd, mongo_srv, "test_db")
 

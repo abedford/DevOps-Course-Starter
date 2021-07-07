@@ -12,8 +12,11 @@ def create_app():
    mongo_db = os.getenv('MONGO_DB')
    mongo_user = os.getenv('MONGO_USER')
    mongo_pwd = os.getenv('MONGO_PWD')
+   mongo_connection = os.getenv('MONGO_CONNECTION')
 
-   mongo_client = ToDoMongoClient(mongo_user, mongo_pwd, mongo_srv, mongo_db)
+   print(f"{mongo_user}:{mongo_pwd}@{mongo_srv}/{mongo_db}")
+
+   mongo_client = ToDoMongoClient(mongo_user, mongo_pwd, mongo_srv, mongo_db, mongo_connection)
 
    #  All the routes and setup code etc
    @app.route('/')

@@ -16,11 +16,13 @@ load_dotenv(dotenv_path)
  
 class ToDoMongoClient:
 
-    def __init__(self, user, password, server, database):
+    def __init__(self, user, password, server, database, connection):
         
-        self.client = pymongo.MongoClient(f"mongodb+srv://{user}:{password}@{server}/{database}?w=majority", ssl=True, tlsAllowInvalidCertificates=True)
+        self.client = pymongo.MongoClient(f"{connection}://{user}:{password}@{server}/{database}?w=majority", ssl=True, tlsAllowInvalidCertificates=True)
         self.database=self.client[database]
 
+    def drop_database(self, name):
+        self.client.drop_database(name)
    
     """
         Gets all the tasks
@@ -54,7 +56,7 @@ class ToDoMongoClient:
     def update_task(self, task_id, status):
         
         print("Updating a task")
-        filter = { "_id": ObjectId(task_id) }
+        filter = { "_id": task_id }
         newstatus = { "$set": { "status": status, "modified_date": datetime.datetime.utcnow()} }
     
         task_collection = self.database.tasks
