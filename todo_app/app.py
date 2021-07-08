@@ -14,8 +14,6 @@ def create_app():
    mongo_pwd = os.getenv('MONGO_PWD')
    mongo_connection = os.getenv('MONGO_CONNECTION')
 
-   print(f"{mongo_user}:{mongo_pwd}@{mongo_srv}/{mongo_db}")
-
    mongo_client = ToDoMongoClient(mongo_user, mongo_pwd, mongo_srv, mongo_db, mongo_connection)
 
    #  All the routes and setup code etc
@@ -26,7 +24,6 @@ def create_app():
       show_all_bool = show_all == "yes"
       print(f"Show all value is {show_all_bool}")
       tasks = mongo_client.get_all_tasks()
-      print(f"Number of tasks returned {len(tasks)}")
       item_view_model = ViewModel(tasks)
       return render_template('index.html', title='To Do App',
          view_model=item_view_model, show_all=show_all_bool)

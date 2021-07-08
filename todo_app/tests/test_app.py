@@ -7,7 +7,7 @@ from dotenv.main import find_dotenv, load_dotenv
 from todo_app.app import *
 
 dummy_task_id = ""
-db_client = pymongo.MongoClient("test.mongodb.net")
+
 
 @pytest.fixture
 def client():
@@ -28,7 +28,8 @@ def client():
 def test_index_page(client):
     
     # set up some data
-    dummy_task_id = add_dummy_task()
+    db_client = pymongo.MongoClient("test.mongodb.net")
+    dummy_task_id = add_dummy_task(db_client)
     response = client.get('/')
 
     assert response.status_code == 200
@@ -57,44 +58,80 @@ def test_add_task(client):
 
 
 def test_complete_task(client):
-    dummy_task_id = add_dummy_task("Doing")
+    db_client = pymongo.MongoClient("test.mongodb.net")
+    dummy_task_id = add_dummy_task(db_client, "Doing")
     data = {'id': dummy_task_id}
     response = client.post('/items/complete', data=data)
 
     assert response.status_code == 302
 
+    response = client.get('/')
+
+    assert response.status_code == 200
+
+    string = response.data.decode('utf-8')
+    assert "Dummy Task" in string
+    assert "Done" in string
+    assert "Doing" not in string
+
+    
+
 
 def test_remove_task(client):
-    dummy_task_id = add_dummy_task()
+    db_client = pymongo.MongoClient("test.mongodb.net")
+    dummy_task_id = add_dummy_task(db_client)
     data = {'id': dummy_task_id}
     
     response = client.post('/items/remove', data=data)
 
     assert response.status_code == 302
 
+    response = client.get('/')
+
+    assert response.status_code == 200
+
+    string = response.data.decode('utf-8')
+    assert "Dummy Task" not in string
+
 
 def test_start_task(client):
-     
-    dummy_task_id = add_dummy_task()
+    db_client = pymongo.MongoClient("test.mongodb.net")
+    dummy_task_id = add_dummy_task(db_client)
     data = {'id': dummy_task_id}
 
     response = client.post('/items/start', data=data)
 
     assert response.status_code == 302
+
+    response = client.get('/')
+
+    assert response.status_code == 200
+
+    string = response.data.decode('utf-8')
+    assert "Dummy Task" in string
+    assert "Doing" in string
  
 
 def test_restart_task(client):
    
-    dummy_task_id = add_dummy_task("Done")
+    db_client = pymongo.MongoClient("test.mongodb.net")
+    dummy_task_id = add_dummy_task(db_client, "Done")
     data = {'id': dummy_task_id}
 
     response = client.post('/items/restart', data=data)
 
     assert response.status_code == 302
 
+    response = client.get('/')
 
-def add_dummy_task(status="To Do"):
-    
+    assert response.status_code == 200
+
+    string = response.data.decode('utf-8')
+    assert "Dummy Task" in string
+    assert "To Do" in string
+
+
+def add_dummy_task(mongoclient, status="To Do"):
        
     task = {"title": "Dummy Task", 
                 "status": status,
@@ -102,7 +139,7 @@ def add_dummy_task(status="To Do"):
                 "duedate": datetime.datetime.utcnow(),
                 "modified_date": datetime.datetime.utcnow()}
 
-    task_collection = db_client["test_db"].tasks
+    task_collection = mongoclient["test_db"].tasks
     task_id = task_collection.insert_one(task).inserted_id
     return task_id
 

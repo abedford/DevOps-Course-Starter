@@ -19,6 +19,7 @@ class ToDoMongoClient:
     def __init__(self, user, password, server, database, connection):
         
         self.client = pymongo.MongoClient(f"{connection}://{user}:{password}@{server}/{database}?w=majority", ssl=True, tlsAllowInvalidCertificates=True)
+        print(f"Connected to {server}/{database}")
         self.database=self.client[database]
 
     def drop_database(self, name):
@@ -56,7 +57,7 @@ class ToDoMongoClient:
     def update_task(self, task_id, status):
         
         print("Updating a task")
-        filter = { "_id": task_id }
+        filter = { "_id": ObjectId(task_id) }
         newstatus = { "$set": { "status": status, "modified_date": datetime.datetime.utcnow()} }
     
         task_collection = self.database.tasks
