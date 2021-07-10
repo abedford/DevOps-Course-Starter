@@ -21,9 +21,11 @@ class ToDoMongoClient:
         self.client = pymongo.MongoClient(f"{connection}://{user}:{password}@{server}/{database}?w=majority", ssl=True, tlsAllowInvalidCertificates=True)
         print(f"Connected to {server}/{database}")
         self.database=self.client[database]
+        self.task_collection = self.database.tasks
 
-    def drop_database(self, name):
-        self.client.drop_database(name)
+    def drop_collection(self):
+        print(f"Dropping {self.task_collection.name} collection")
+        self.task_collection.drop()
    
     """
         Gets all the tasks
@@ -37,7 +39,7 @@ class ToDoMongoClient:
         tasks = []
         print("Getting the tasks from the mongo db")
     
-        task_objects = self.database.tasks.find({})
+        task_objects = self.task_collection.find({})
         for task_object in task_objects:
            
             task = Task(task_object["_id"],task_object["title"], task_object["description"], task_object["status"], task_object["duedate"], task_object["modified_date"])
@@ -60,8 +62,7 @@ class ToDoMongoClient:
         filter = { "_id": ObjectId(task_id) }
         newstatus = { "$set": { "status": status, "modified_date": datetime.datetime.utcnow()} }
     
-        task_collection = self.database.tasks
-        task_collection.update_one(filter, newstatus)
+        self.task_collection.update_one(filter, newstatus)
 
 
         
@@ -110,7 +111,7 @@ class ToDoMongoClient:
         
         print("Deleting a task")
 
-        self.database.tasks.delete_one({"_id": ObjectId(task_id)})
+        self.task_collection.delete_one({"_id": ObjectId(task_id)})
 
     
        
@@ -134,11 +135,11 @@ class ToDoMongoClient:
                 "duedate": duedate,
                 "modified_date": datetime.datetime.utcnow()}
 
-        task_collection = self.database.tasks
-        task_id = task_collection.insert_one(task).inserted_id
+        
+        task_id = self.task_collection.insert_one(task).inserted_id
 
         print(f"Task {task_id} added successfully")
-        print(f"Tasks are now {self.database.task_collection.find()}")
+        print(f"Tasks are now {self.task_collection.find()}")
         return task_id
 
 

@@ -143,12 +143,3 @@ def add_dummy_task(mongoclient, status="To Do"):
     task_id = task_collection.insert_one(task).inserted_id
     return task_id
 
-
-def check_task_exists(task_name):
-    task_collection = db_client["test_db"].tasks
-    
-    filter = { "title": task_name }
-    result = task_collection.find_one(filter)
-    print(f"Found {len(result)} results")
-    return len(result)
-

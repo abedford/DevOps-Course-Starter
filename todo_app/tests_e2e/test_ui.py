@@ -19,8 +19,9 @@ def test_app():
     mongo_srv = os.getenv('MONGO_SRV')
     mongo_user = os.getenv('MONGO_USER')
     mongo_pwd = os.getenv('MONGO_PWD')
+    mongo_connection = os.getenv('MONGO_CONNECTION')
 
-    mongo_client = ToDoMongoClient(mongo_user, mongo_pwd, mongo_srv, "test_db")
+    mongo_client = ToDoMongoClient(mongo_user, mongo_pwd, mongo_srv, "test_db", mongo_connection)
 
     application = create_app()
         
@@ -32,7 +33,7 @@ def test_app():
         
     # Tear Down
     thread.join(1)
-    mongo_client.drop_database('test_db')
+    mongo_client.drop_collection()
     
 
 @pytest.fixture(scope="module")
@@ -76,6 +77,12 @@ def test_task_journey(driver, test_app):
     time.sleep(1)
 
     try:
+        restart_button = driver.find_element_by_name("restart")
+        assert False, "Restart button was not found"
+    except NoSuchElementException:
+        assert True, "Restart button was not found"
+
+    try:
         start_button = driver.find_element_by_name("start")
         assert False, "Start button was found"
     except NoSuchElementException:
@@ -87,11 +94,7 @@ def test_task_journey(driver, test_app):
     except NoSuchElementException:
         assert True, "Complete button was not found"
         
-    try:
-        restart_button = driver.find_element_by_name("restart")
-        assert False, "Restart button was not found"
-    except NoSuchElementException:
-        assert True, "Restart button was not found"
+   
 
 
     

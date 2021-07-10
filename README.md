@@ -51,13 +51,14 @@ You should see output similar to the following:
 ```
 Now visit [`http://localhost:5000/`](http://localhost:5000/) in your web browser to view the app.
 
-## Connecting to the Trello API
-To connect to Trello API you will need an API key, a server token and a board ID. Register with https://developer.atlassian.com/cloud/trello/ to get your API key and server token. 
-Create a board on Trello and use this board ID for the ToDo app. 
+## Connecting to the Mongo DB
+To connect to Mongo DB you will need a Mongo Atlas DB connection with user and password. Register with https://www.mongodb.com/cloud/atlas/ to set up your Database.
 Put the details in the .env file
-API_KEY=XXX
-SERVER_TOKEN=XXX
-BOARD_ID=XXX
+MONGO_CONNECTION=mongodb+srv
+MONGO_SRV=XXX
+MONGO_DB=XXX
+MONGO_USER=XXX
+MONGO_PWD=XXX
 
 ## Running the tests
 

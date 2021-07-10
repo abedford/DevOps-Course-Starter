@@ -25,5 +25,6 @@ def test_can_connect_to_mongo_db_store_a_task_and_delete_it():
     testClient.delete_task(task_id)
     list_of_tasks = testClient.get_all_tasks()
     assert(len(list_of_tasks) == current_no_of_tasks)
+    testClient.drop_collection()
 
 
