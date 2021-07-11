@@ -4,17 +4,18 @@ from todo_app.data.viewmodel import *
 from flask import Flask, render_template, request, redirect
 import os
 
-def create_app():
+def create_app(db_name = ""):
    app = Flask(__name__)
    item_view_model = None
 
    mongo_srv = os.getenv('MONGO_SRV')
-   mongo_db = os.getenv('MONGO_DB')
+   if db_name == "":
+      db_name = os.getenv('MONGO_DB')
    mongo_user = os.getenv('MONGO_USER')
    mongo_pwd = os.getenv('MONGO_PWD')
    mongo_connection = os.getenv('MONGO_CONNECTION')
 
-   mongo_client = ToDoMongoClient(mongo_user, mongo_pwd, mongo_srv, mongo_db, mongo_connection)
+   mongo_client = ToDoMongoClient(mongo_user, mongo_pwd, mongo_srv, db_name, mongo_connection)
 
    #  All the routes and setup code etc
    @app.route('/')

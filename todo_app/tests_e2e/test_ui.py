@@ -21,9 +21,9 @@ def test_app():
     mongo_pwd = os.getenv('MONGO_PWD')
     mongo_connection = os.getenv('MONGO_CONNECTION')
 
-    mongo_client = ToDoMongoClient(mongo_user, mongo_pwd, mongo_srv, "test_db", mongo_connection)
+    database_name = "testdb"
 
-    application = create_app()
+    application = create_app(database_name)
         
     # start the app in its own thread.
     thread = Thread(target=lambda: application.run(use_reloader=False))
@@ -33,7 +33,6 @@ def test_app():
         
     # Tear Down
     thread.join(1)
-    mongo_client.drop_collection()
     
 
 @pytest.fixture(scope="module")
