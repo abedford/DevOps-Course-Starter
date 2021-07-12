@@ -1,5 +1,5 @@
 
-""" Unit tests for app.py """
+""" Unit tests for viewmodel.py """
 import pytest
 
 from todo_app.data.viewmodel import *

@@ -1,27 +1,31 @@
 
-from todo_app.data.trello_board import *
+from todo_app.data.todo_mongo_client import *
 from todo_app.data.viewmodel import *
 from flask import Flask, render_template, request, redirect
+import os
 
-def create_app():
+def create_app(db_name = ""):
    app = Flask(__name__)
    item_view_model = None
 
-   board_id = os.getenv('BOARD_ID')
-   api_key = os.getenv('API_KEY')
-   server_token = os.getenv('SERVER_TOKEN')
-   board = TrelloBoard(board_id, api_key, server_token)
+   mongo_srv = os.getenv('MONGO_SRV')
+   if db_name == "":
+      db_name = os.getenv('MONGO_DB')
+   mongo_user = os.getenv('MONGO_USER')
+   mongo_pwd = os.getenv('MONGO_PWD')
+   mongo_connection = os.getenv('MONGO_CONNECTION')
+
+   mongo_client = ToDoMongoClient(mongo_user, mongo_pwd, mongo_srv, db_name, mongo_connection)
+
    #  All the routes and setup code etc
-
-
    @app.route('/')
    def index():
       show_all = request.args.get('show_all')
       
       show_all_bool = show_all == "yes"
       print(f"Show all value is {show_all_bool}")
-      cards = board.get_all_cards_on_board()
-      item_view_model = ViewModel(cards)
+      tasks = mongo_client.get_all_tasks()
+      item_view_model = ViewModel(tasks)
       return render_template('index.html', title='To Do App',
          view_model=item_view_model, show_all=show_all_bool)
 
@@ -32,10 +36,8 @@ def create_app():
       task_title = form_data["title"]
       task_desc = form_data["description"]
       task_due_date = form_data["duedate"]
-      print(f"Adding task with {task_title} {task_desc} {task_due_date}")
       
-      
-      board.add_task(task_title, task_desc, task_due_date)  
+      mongo_client.add_task(task_title, task_desc, task_due_date) 
       
       return redirect('/')
 
@@ -44,7 +46,7 @@ def create_app():
       if request.method == 'POST':
          form_data = request.form
          task_id = form_data["id"]
-         board.complete_task(task_id)
+         mongo_client.complete_task(task_id)
             
       return redirect('/')
 
@@ -57,8 +59,7 @@ def create_app():
          
          form_data = request.form
          task_id = form_data["id"]
-         print(f"The form data for delete is: {form_data}")
-         board.delete_task(task_id)
+         mongo_client.delete_task(task_id)
          
       return redirect('/')
 
@@ -68,8 +69,7 @@ def create_app():
       if request.method == 'POST':
          form_data = request.form
          task_id = form_data["id"]
-         
-         board.start_task(task_id)
+         mongo_client.start_task(task_id)
          
       return redirect('/')
 
@@ -78,8 +78,7 @@ def create_app():
       if request.method == 'POST':
          form_data = request.form
          task_id = form_data["id"]
-         
-         board.reopen_task(task_id)
+         mongo_client.reopen_task(task_id)
          
       return redirect('/')
 

@@ -2,13 +2,12 @@ import os
 from threading import Thread
 from dotenv.main import find_dotenv, load_dotenv
 from todo_app.app import create_app
-from todo_app.data.trello_board import TrelloBoard
+from todo_app.data.todo_mongo_client import *
 from selenium import webdriver
 from selenium import webdriver
 from selenium.webdriver.chrome.options import Options
 from selenium.common.exceptions import NoSuchElementException
 import time
-
 import pytest
 
 @pytest.fixture(scope='module')
@@ -16,29 +15,25 @@ def test_app():
     # Create the new board & update the board id environment variable
     file_path = find_dotenv('.env')
     load_dotenv(file_path, override=True)
-    api_key = os.getenv('API_KEY')
-    server_token = os.getenv('SERVER_TOKEN')
     
-    board_id = TrelloBoard.create_new_board(api_key, server_token, "test board")
-    
-    if board_id is not None:
-        os.environ['BOARD_ID'] = board_id
-    
-        # construct the new application
-        application = create_app()
-        
-        # start the app in its own thread.
-        thread = Thread(target=lambda: application.run(use_reloader=False))
-        thread.daemon = True
-        thread.start()
-        yield application
-        
-        # Tear Down
-        thread.join(1)
-        TrelloBoard.delete_board(api_key, server_token, board_id)
-    else:
-        print("Could not create a temporary trello board")
+    mongo_srv = os.getenv('MONGO_SRV')
+    mongo_user = os.getenv('MONGO_USER')
+    mongo_pwd = os.getenv('MONGO_PWD')
+    mongo_connection = os.getenv('MONGO_CONNECTION')
 
+    database_name = "testdb"
+
+    application = create_app(database_name)
+        
+    # start the app in its own thread.
+    thread = Thread(target=lambda: application.run(use_reloader=False))
+    thread.daemon = True
+    thread.start()
+    yield application
+        
+    # Tear Down
+    thread.join(1)
+    
 
 @pytest.fixture(scope="module")
 def driver():
@@ -81,6 +76,12 @@ def test_task_journey(driver, test_app):
     time.sleep(1)
 
     try:
+        restart_button = driver.find_element_by_name("restart")
+        assert False, "Restart button was not found"
+    except NoSuchElementException:
+        assert True, "Restart button was not found"
+
+    try:
         start_button = driver.find_element_by_name("start")
         assert False, "Start button was found"
     except NoSuchElementException:
@@ -92,11 +93,7 @@ def test_task_journey(driver, test_app):
     except NoSuchElementException:
         assert True, "Complete button was not found"
         
-    try:
-        restart_button = driver.find_element_by_name("restart")
-        assert False, "Restart button was not found"
-    except NoSuchElementException:
-        assert True, "Restart button was not found"
+   
 
 
     

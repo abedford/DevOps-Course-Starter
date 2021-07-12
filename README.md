@@ -51,13 +51,14 @@ You should see output similar to the following:
 ```
 Now visit [`http://localhost:5000/`](http://localhost:5000/) in your web browser to view the app.
 
-## Connecting to the Trello API
-To connect to Trello API you will need an API key, a server token and a board ID. Register with https://developer.atlassian.com/cloud/trello/ to get your API key and server token. 
-Create a board on Trello and use this board ID for the ToDo app. 
+## Connecting to the Mongo DB
+To connect to Mongo DB you will need a Mongo Atlas DB connection with user and password. Register with https://www.mongodb.com/cloud/atlas/ to set up your Database.
 Put the details in the .env file
-API_KEY=XXX
-SERVER_TOKEN=XXX
-BOARD_ID=XXX
+MONGO_CONNECTION=mongodb+srv
+MONGO_SRV=XXX
+MONGO_DB=XXX
+MONGO_USER=XXX
+MONGO_PWD=XXX
 
 ## Running the tests
 
@@ -75,7 +76,7 @@ $ poetry run pytest --cov=report term-missing --cov=tests
 ```
 The UI tests are in a folder called tests_e2e and can be run separately, or not at all if you want the tests to complete more quickly. They rely on chrome browser and chrome driver being available and being added to the path.
 
-A few tests will actually connect directly to trello with your API key and server token to create a temporary board but this will be deleted as part of the test tear down. Other tests will just use dummy board data.
+A few tests will actually connect directly to mongo db with your API key and server token to create a temporary board but this will be deleted as part of the test tear down. Other tests will just use dummy board data.
 
 
 ## Running in Vagrant
@@ -113,9 +114,11 @@ This sets up the port forwarding and passes the .env file through to set up the 
 
 You should then be able to see the application as usual at 127.0.0.1:5000
 You will need to make sure you create .env as a file to put your environment variables in, this needs to include:
-API_KEY=XXX
-SERVER_TOKEN=XXX
-BOARD_ID=XXX
+MONGO_CONNECTION=mongodb+srv
+MONGO_SRV=XXX
+MONGO_DB=XXX
+MONGO_USER=XXX
+MONGO_PWD=XXX
 as before. This won't get checked in.
 
 
