@@ -4,7 +4,9 @@ script:
 - docker build --tag todo-app-dev --target development .
 - docker build --tag todo-app-test --target test . 
 after_script:
-- docker run -e MONGO_CONNECTION -e MONGO_DB -e MONGO_PWD -e MONGO_SRV -e MONGO_USER todo-app-test
+- docker run -e MONGO_CONNECTION -e MONGO_DB -e MONGO_PWD -e MONGO_SRV -e MONGO_USER todo-app-test todo_app/tests_e2e
+- docker run --env-file .env.test todo-app-test todo_app/tests
+
 
 deploy:
   skip_cleanup: true
