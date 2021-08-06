@@ -2,7 +2,10 @@
 from todo_app.data.todo_mongo_client import *
 from todo_app.data.viewmodel import *
 from flask import Flask, render_template, request, redirect
+from flask_login import login_required
+from flask_login import LoginManager
 import os
+import requests
 
 def create_app(db_name = ""):
    app = Flask(__name__)
@@ -17,7 +20,11 @@ def create_app(db_name = ""):
 
    mongo_client = ToDoMongoClient(mongo_user, mongo_pwd, mongo_srv, db_name, mongo_connection)
 
+   login_manager = LoginManager() 
+   login_manager.init_app(app)
+
    #  All the routes and setup code etc
+   @login_required
    @app.route('/')
    def index():
       show_all = request.args.get('show_all')
@@ -86,6 +93,28 @@ def create_app(db_name = ""):
    if __name__ == '__main__':
       app.run()
 
+
+   
+
+ 
+   @login_manager.unauthorized_handler 
+   def unauthenticated(): 
+      # need to call GET https://github.com/login/oauth/authorize with clientid and redirect_uri
+      authorize_url = 'https://github.com/login/oauth/authorize?client_id=640c2ac9d976df608c2b&redirect_uri=http://127.0.0.1:5000/login/'
+      
+      print("Trying to redirect to github authorization")
+      return redirect(authorize_url)
+      
+      # Then we will post the access_toekn back to github
+      # POST https://github.com/login/oauth/access_token
+      # client_id
+      # client secret
+      # code
+      # redirect_uri
+
+   @login_manager.user_loader 
+   def load_user(user_id): 
+      return None 
 
    return app
 
