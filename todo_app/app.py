@@ -1,13 +1,16 @@
 
 from todo_app.data.todo_mongo_client import *
 from todo_app.data.viewmodel import *
-from flask import Flask, render_template, request, redirect
+from todo_app.data.user import *
+from flask import Flask, render_template, request, redirect, session
 from flask_login import login_required
 from flask_login import LoginManager
+from flask_login import login_user
 import os
 import requests
 import json
 from oauthlib.oauth2 import WebApplicationClient
+
 
 
 def create_app(db_name = ""):
@@ -32,10 +35,6 @@ def create_app(db_name = ""):
 
    os.environ['OAUTHLIB_INSECURE_TRANSPORT'] = '1'
 
-
-
-
-   
 
    #  All the routes and setup code etc
    @app.route('/')
@@ -106,7 +105,7 @@ def create_app(db_name = ""):
    @app.route('/login/callback', methods = ['GET'])
    def login():
       code = request.args.get("code")
-      print(f"Processing the login route code is: {code}")
+      #print(f"Processing the login route code is: {code}")
       
       if request.method == 'GET':
          code = request.args.get("code")
@@ -120,9 +119,6 @@ def create_app(db_name = ""):
 
          headers['Accept'] = 'application/json'
 
-
-         print("")
-         print(f"The Token url {token_url}, the headers {headers} body {body}")
          token_response = requests.post(
             token_url,
             headers=headers,
@@ -130,15 +126,31 @@ def create_app(db_name = ""):
             auth=(oauth_client_id, oauth_secret_id)
          )
          
+         
+         client.parse_request_body_response(json.dumps(token_response.json()))
+         # access token is now stored in the client.access_token param
+
+         userinfo_endpoint = "https://api.github.com/user"
+         uri, headers, body = client.add_token(userinfo_endpoint)
+         userinfo_response = requests.get(uri, headers=headers, data=body)
          print("")
-         print(f"The json body is {token_response.json()}")
-         #params = client.parse_request_body_response(token_response.json())
-         params = client.parse_request_body_response(json.dumps(token_response.json()))
-         print(f"Access token {client.access_token}")
-         print(f"Token type {client.token_type}")
+         print(userinfo_response.content)
+         print("")
+         #if userinfo_response.json().get("email_verified"):
+         unique_id = userinfo_response.json()["login"]
+         #else:
+         #   return "User email not available or not verified by GitHub.", 400
+         print(f"Unique id is {unique_id}")
 
+         # Create a user in your db with the information provided
+         # by GitHub
+         user = User(unique_id)
+         print(f"User created {user}")
 
-      return redirect('/')
+         # Begin user session by logging the user in
+         session['username'] = unique_id
+         login_user(user)
+         return redirect('/')
 
 
 
@@ -155,7 +167,7 @@ def create_app(db_name = ""):
 
    @login_manager.user_loader 
    def load_user(user_id): 
-      return None 
+      return User(user_id)
 
    return app
 
