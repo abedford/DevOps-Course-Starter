@@ -23,6 +23,18 @@ def create_app(db_name = ""):
 
    mongo_client = ToDoMongoClient(mongo_user, mongo_pwd, mongo_srv, db_name, mongo_connection)
 
+   oauth_client_id = os.getenv('OAUTH_CLIENT_ID')
+   oauth_secret_id = os.getenv('OAUTH_CLIENT_SECRET')
+
+   login_manager = LoginManager() 
+   login_manager.init_app(app)
+   client = WebApplicationClient(oauth_client_id)
+
+   os.environ['OAUTHLIB_INSECURE_TRANSPORT'] = '1'
+
+
+
+
    
 
    #  All the routes and setup code etc
@@ -93,63 +105,53 @@ def create_app(db_name = ""):
 
    @app.route('/login/callback', methods = ['GET'])
    def login():
-      print("Processing the login route")
+      code = request.args.get("code")
+      print(f"Processing the login route code is: {code}")
       
       if request.method == 'GET':
-         oauth_client_id = os.getenv('OAUTH_CLIENT_ID')
-         oauth_secret_id = os.getenv('OAUTH_SECRET_ID')
-
-         client = WebApplicationClient(oauth_client_id)
+         code = request.args.get("code")
          # Prepare and send a request to get tokens
          token_url, headers, body = client.prepare_token_request(
             "https://github.com/login/oauth/access_token",
             authorization_response=request.url,
             redirect_url=request.base_url,
-            code="" # get the code somehow
+            code=code  # get the code somehow
          )
+
+         headers['Accept'] = 'application/json'
+
+
+         print("")
+         print(f"The Token url {token_url}, the headers {headers} body {body}")
          token_response = requests.post(
             token_url,
             headers=headers,
             data=body,
             auth=(oauth_client_id, oauth_secret_id)
          )
-
-         # Parse the tokens!
          
-         token = client.parse_request_body_response(json.dumps(token_response.json()))
+         print("")
+         print(f"The json body is {token_response.json()}")
+         #params = client.parse_request_body_response(token_response.json())
+         params = client.parse_request_body_response(json.dumps(token_response.json()))
+         print(f"Access token {client.access_token}")
+         print(f"Token type {client.token_type}")
 
-      return redirect(request.url)
+
+      return redirect('/')
 
 
 
    if __name__ == '__main__':
-      app.run()
-
-   login_manager = LoginManager() 
-   login_manager.init_app(app)
-   oauth_client_id = os.getenv('OAUTH_CLIENT_ID')
-   oauth_secret_id = os.getenv('OAUTH_SECRET_ID')
-   client = WebApplicationClient(oauth_client_id)
-
+      app.run(ssl_context="adhoc")
  
    @login_manager.unauthorized_handler 
    def unauthenticated(): 
-      # need to call GET https://github.com/login/oauth/authorize with clientid and redirect_uri
       authorize_endpoint = 'https://github.com/login/oauth/authorize'
       
       authorize_url = client.prepare_request_uri(
         authorize_endpoint, "http://127.0.0.1:5000/login/callback")
       return redirect(authorize_url)
-
-
-      
-      # returns http://127.0.0.1:5000/login/callback/?code=ee365f5d6af9dff0e7b9
-      # Then we will post the access_token back to github
-      # POST https://github.com/login/oauth/access_token
-      # client_id
-      # client secret
-      # code
-      # redirect_uri
 
    @login_manager.user_loader 
    def load_user(user_id): 
