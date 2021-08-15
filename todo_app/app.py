@@ -6,6 +6,8 @@ from flask import Flask, render_template, request, redirect, session
 from flask_login import login_required
 from flask_login import LoginManager
 from flask_login import login_user
+from flask_login import current_user
+from flask_user import roles_required
 import os
 import requests
 import json
@@ -34,11 +36,13 @@ def create_app(db_name = ""):
    client = WebApplicationClient(oauth_client_id)
 
    os.environ['OAUTHLIB_INSECURE_TRANSPORT'] = '1'
+   app.secret_key = oauth_secret_id
 
 
    #  All the routes and setup code etc
    @app.route('/')
    @login_required
+   @roles_required("Reader", "Writer")
    def index():
       show_all = request.args.get('show_all')
       
@@ -51,6 +55,8 @@ def create_app(db_name = ""):
 
 
    @app.route('/items/add', methods = ['POST'])
+   @login_required
+   @roles_required("Writer")
    def add_item():
       form_data = request.form
       task_title = form_data["title"]
@@ -62,6 +68,8 @@ def create_app(db_name = ""):
       return redirect('/')
 
    @app.route('/items/complete', methods = ['POST', 'GET'])
+   @login_required
+   @roles_required("Writer")
    def complete_item():
       if request.method == 'POST':
          form_data = request.form
@@ -73,6 +81,8 @@ def create_app(db_name = ""):
 
      
    @app.route('/items/remove', methods = ['POST'])
+   @login_required
+   @roles_required("Writer")
    def remove_item():
 
       if request.method == 'POST':
@@ -85,6 +95,8 @@ def create_app(db_name = ""):
 
 
    @app.route('/items/start', methods = ['POST'])
+   @login_required
+   @roles_required("Writer")
    def start_item():
       if request.method == 'POST':
          form_data = request.form
@@ -94,6 +106,8 @@ def create_app(db_name = ""):
       return redirect('/')
 
    @app.route('/items/restart', methods = ['POST'])
+   @login_required
+   @roles_required("Writer")
    def restart_item():
       if request.method == 'POST':
          form_data = request.form
@@ -105,7 +119,6 @@ def create_app(db_name = ""):
    @app.route('/login/callback', methods = ['GET'])
    def login():
       code = request.args.get("code")
-      #print(f"Processing the login route code is: {code}")
       
       if request.method == 'GET':
          code = request.args.get("code")
@@ -133,18 +146,15 @@ def create_app(db_name = ""):
          userinfo_endpoint = "https://api.github.com/user"
          uri, headers, body = client.add_token(userinfo_endpoint)
          userinfo_response = requests.get(uri, headers=headers, data=body)
-         print("")
-         print(userinfo_response.content)
-         print("")
-         #if userinfo_response.json().get("email_verified"):
+         
          unique_id = userinfo_response.json()["login"]
-         #else:
-         #   return "User email not available or not verified by GitHub.", 400
-         print(f"Unique id is {unique_id}")
+         
+         writer_role = Role("1", "Writer")
+         reader_role = Role("2", "Reader")
+         user = User(unique_id, reader_role)
+         if unique_id == "abedford":
+            user = User(unique_id, writer_role)            
 
-         # Create a user in your db with the information provided
-         # by GitHub
-         user = User(unique_id)
          print(f"User created {user}")
 
          # Begin user session by logging the user in
@@ -166,8 +176,13 @@ def create_app(db_name = ""):
       return redirect(authorize_url)
 
    @login_manager.user_loader 
-   def load_user(user_id): 
-      return User(user_id)
+   def load_user(user_id):
+      writer_role = Role("1", "Writer")
+      reader_role = Role("2", "Reader")
+      user = User(user_id, reader_role)
+      if user_id == "abedford":
+         user = User(user_id, writer_role)  
+      return user
 
    return app
 
