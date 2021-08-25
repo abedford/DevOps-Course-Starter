@@ -7,7 +7,6 @@ from flask_login import login_required
 from flask_login import LoginManager
 from flask_login import login_user
 from flask_login import current_user
-from flask_user import roles_required
 import os
 import requests
 import json
@@ -15,10 +14,13 @@ from oauthlib.oauth2 import WebApplicationClient
 
 
 
-def create_app(db_name = ""):
+def create_app(db_name = "", disable_login = False):
    app = Flask(__name__)
    item_view_model = None
 
+   if disable_login == True:
+      print("Switching off authentication for testing purposes")
+      app.LOGIN_DISABLED = True
    mongo_srv = os.getenv('MONGO_SRV')
    if db_name == "":
       db_name = os.getenv('MONGO_DB')
@@ -33,87 +35,98 @@ def create_app(db_name = ""):
 
    login_manager = LoginManager() 
    login_manager.init_app(app)
+   login_manager._login_disabled == True
    client = WebApplicationClient(oauth_client_id)
 
    os.environ['OAUTHLIB_INSECURE_TRANSPORT'] = '1'
    app.secret_key = oauth_secret_id
 
+   writer_role = "Writer"
+   reader_role = "Reader"
+
 
    #  All the routes and setup code etc
    @app.route('/')
    @login_required
-   @roles_required("Reader", "Writer")
    def index():
-      show_all = request.args.get('show_all')
-      
-      show_all_bool = show_all == "yes"
-      print(f"Show all value is {show_all_bool}")
-      tasks = mongo_client.get_all_tasks()
-      item_view_model = ViewModel(tasks)
-      return render_template('index.html', title='To Do App',
-         view_model=item_view_model, show_all=show_all_bool)
-
+      if (current_user.role == reader_role or current_user.role == writer_role):
+         show_all = request.args.get('show_all')
+         
+         show_all_bool = show_all == "yes"
+         print(f"Show all value is {show_all_bool}")
+         tasks = mongo_client.get_all_tasks()
+         item_view_model = ViewModel(tasks)
+         writer_bool = current_user.role == writer_role
+         return render_template('index.html', title='To Do App',
+            view_model=item_view_model, show_all=show_all_bool, writer=writer_bool)
+      else:
+         print(f"Role is not reader or writer - user is {current_user}")
+         # need to display an error page
 
    @app.route('/items/add', methods = ['POST'])
    @login_required
-   @roles_required("Writer")
    def add_item():
-      form_data = request.form
-      task_title = form_data["title"]
-      task_desc = form_data["description"]
-      task_due_date = form_data["duedate"]
-      
-      mongo_client.add_task(task_title, task_desc, task_due_date) 
-      
+      if (current_user.role == writer_role):
+         form_data = request.form
+         task_title = form_data["title"]
+         task_desc = form_data["description"]
+         task_due_date = form_data["duedate"]
+         
+         mongo_client.add_task(task_title, task_desc, task_due_date) 
+      else:
+         print("Reader Role is not allowed to add a task")
       return redirect('/')
 
    @app.route('/items/complete', methods = ['POST', 'GET'])
    @login_required
-   @roles_required("Writer")
    def complete_item():
-      if request.method == 'POST':
-         form_data = request.form
-         task_id = form_data["id"]
-         mongo_client.complete_task(task_id)
-            
+      if (current_user.role == writer_role):
+         if request.method == 'POST':
+            form_data = request.form
+            task_id = form_data["id"]
+            mongo_client.complete_task(task_id)
+      else:
+         print("Reader Role is not allowed to complete a task")   
       return redirect('/')
 
 
      
    @app.route('/items/remove', methods = ['POST'])
    @login_required
-   @roles_required("Writer")
    def remove_item():
-
-      if request.method == 'POST':
+      if (current_user.role == writer_role):
+         if request.method == 'POST':
          
-         form_data = request.form
-         task_id = form_data["id"]
-         mongo_client.delete_task(task_id)
-         
+            form_data = request.form
+            task_id = form_data["id"]
+            mongo_client.delete_task(task_id)
+      else:
+         print("Reader Role is not allowed to remove a task")   
       return redirect('/')
 
 
    @app.route('/items/start', methods = ['POST'])
    @login_required
-   @roles_required("Writer")
    def start_item():
-      if request.method == 'POST':
-         form_data = request.form
-         task_id = form_data["id"]
-         mongo_client.start_task(task_id)
-         
+      if (current_user.role == writer_role):
+         if request.method == 'POST':
+            form_data = request.form
+            task_id = form_data["id"]
+            mongo_client.start_task(task_id)
+      else:
+         print("Reader Role is not allowed to start a task")   
       return redirect('/')
 
    @app.route('/items/restart', methods = ['POST'])
    @login_required
-   @roles_required("Writer")
    def restart_item():
-      if request.method == 'POST':
-         form_data = request.form
-         task_id = form_data["id"]
-         mongo_client.reopen_task(task_id)
-         
+      if (current_user.role == writer_role):
+         if request.method == 'POST':
+               form_data = request.form
+               task_id = form_data["id"]
+               mongo_client.reopen_task(task_id)
+      else:
+         print("Reader Role is not allowed to restart a task")     
       return redirect('/')
 
    @app.route('/login/callback', methods = ['GET'])
@@ -149,11 +162,11 @@ def create_app(db_name = ""):
          
          unique_id = userinfo_response.json()["login"]
          
-         writer_role = Role("1", "Writer")
-         reader_role = Role("2", "Reader")
+         #writer_role = Role("1", "Writer")
+         #reader_role = Role("2", "Reader")
          user = User(unique_id, reader_role)
          if unique_id == "abedford":
-            user = User(unique_id, writer_role)            
+            user = User(unique_id, reader_role)            
 
          print(f"User created {user}")
 
@@ -177,11 +190,11 @@ def create_app(db_name = ""):
 
    @login_manager.user_loader 
    def load_user(user_id):
-      writer_role = Role("1", "Writer")
-      reader_role = Role("2", "Reader")
+      #writer_role = Role("1", "Writer")
+      #reader_role = Role("2", "Reader")
       user = User(user_id, reader_role)
       if user_id == "abedford":
-         user = User(user_id, writer_role)  
+         user = User(user_id, reader_role)  
       return user
 
    return app

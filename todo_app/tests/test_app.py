@@ -19,8 +19,9 @@ def client():
 
     with mongomock.patch(servers=(('test.mongodb.net', 27017),)):
         # Create the new app.
-        test_app = create_app()
-        #test_app.LOGIN_DISABLED = True
+        disable_login = True
+        test_app = create_app("", disable_login)
+        
         # Use the app to create a test_client that can be used in our tests.
         with test_app.test_client() as client:
             yield client
