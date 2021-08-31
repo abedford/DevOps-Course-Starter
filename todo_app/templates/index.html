@@ -8,7 +8,9 @@
     <p class="lead">Just another to-do app.</p>
   
   </div>
-  <a href="/users/">User Management</a>
+  {% if admin %}
+    <a href="/users/">User Management</a>
+  {% endif %}
   <div class="container p-3 my-3 bg-dark text-white">
     <div class="row">
       

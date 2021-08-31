@@ -23,7 +23,7 @@ def test_app():
 
     database_name = "testdb"
 
-    application = create_app(database_name)
+    application = create_app(database_name, True)
         
     # start the app in its own thread.
     thread = Thread(target=lambda: application.run(use_reloader=False))

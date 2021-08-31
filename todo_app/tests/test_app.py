@@ -32,6 +32,7 @@ def test_index_page(client):
     # set up some data
     db_client = pymongo.MongoClient("test.mongodb.net")
     dummy_task_id = add_dummy_task(db_client)
+    
     response = client.get('/')
 
     assert response.status_code == 200

@@ -19,8 +19,8 @@ def create_app(db_name = "", disable_login = False):
    item_view_model = None
 
    if disable_login == True:
-      print("Switching off authentication for testing purposes")
-      app.LOGIN_DISABLED = True
+      print("Switching off authentication in the app config for testing purposes")
+      app.config.LOGIN_DISABLED = True
    mongo_srv = os.getenv('MONGO_SRV')
    if db_name == "":
       db_name = os.getenv('MONGO_DB')
@@ -35,7 +35,6 @@ def create_app(db_name = "", disable_login = False):
 
    login_manager = LoginManager() 
    login_manager.init_app(app)
-   login_manager._login_disabled == True
    client = WebApplicationClient(oauth_client_id)
 
    os.environ['OAUTHLIB_INSECURE_TRANSPORT'] = '1'
@@ -51,25 +50,23 @@ def create_app(db_name = "", disable_login = False):
    @login_required
    def index():
       print(f"Current user is {current_user}")
-      if (current_user.role == reader_role or current_user.role == writer_role or current_user.role == admin_role):
-         show_all = request.args.get('show_all')
-         
-         show_all_bool = show_all == "yes"
-         print(f"Show all value is {show_all_bool}")
-         tasks = mongo_client.get_all_tasks()
-         item_view_model = ViewModel(tasks)
-         writer_bool = current_user.role == writer_role
-         admin_bool = current_user.role == admin_role
-         return render_template('index.html', title='To Do App',
-            view_model=item_view_model, show_all=show_all_bool, writer=writer_bool, admin=admin_bool)
-      else:
-         print(f"Role is not reader or writer - user is {current_user}")
-         # need to display an error page
+      
+      show_all = request.args.get('show_all')
+      
+      show_all_bool = show_all == "yes"
+      print(f"Show all value is {show_all_bool}")
+      tasks = mongo_client.get_all_tasks()
+      item_view_model = ViewModel(tasks)
+      # We want to only show certain buttons and links to writers or admins UNLESS login is disabled (ie. we are running tests)
+      writer_bool = (current_user.role == writer_role or app.config.LOGIN_DISABLED)
+      admin_bool = (current_user.role == admin_role or app.config.LOGIN_DISABLED)
+      return render_template('index.html', title='To Do App',
+         view_model=item_view_model, show_all=show_all_bool, writer=writer_bool, admin=admin_bool)
 
    @app.route('/items/add', methods = ['POST'])
    @login_required
    def add_item():
-      if (current_user.role == writer_role):
+      if (current_user.role == writer_role or app.config.LOGIN_DISABLED):
          form_data = request.form
          task_title = form_data["title"]
          task_desc = form_data["description"]
@@ -83,7 +80,7 @@ def create_app(db_name = "", disable_login = False):
    @app.route('/items/complete', methods = ['POST', 'GET'])
    @login_required
    def complete_item():
-      if (current_user.role == writer_role):
+      if (current_user.role == writer_role or app.config.LOGIN_DISABLED):
          if request.method == 'POST':
             form_data = request.form
             task_id = form_data["id"]
@@ -97,7 +94,7 @@ def create_app(db_name = "", disable_login = False):
    @app.route('/items/remove', methods = ['POST'])
    @login_required
    def remove_item():
-      if (current_user.role == writer_role):
+      if (current_user.role == writer_role or app.config.LOGIN_DISABLED):
          if request.method == 'POST':
          
             form_data = request.form
@@ -111,7 +108,7 @@ def create_app(db_name = "", disable_login = False):
    @app.route('/items/start', methods = ['POST'])
    @login_required
    def start_item():
-      if (current_user.role == writer_role):
+      if (current_user.role == writer_role or app.config.LOGIN_DISABLED):
          if request.method == 'POST':
             form_data = request.form
             task_id = form_data["id"]
@@ -123,7 +120,7 @@ def create_app(db_name = "", disable_login = False):
    @app.route('/users/', methods = ['GET'])
    @login_required
    def get_users():
-      if (current_user.role == admin_role):
+      if (current_user.role == admin_role or app.config.LOGIN_DISABLED):
          
          users = mongo_client.get_all_users()
          
@@ -136,7 +133,7 @@ def create_app(db_name = "", disable_login = False):
    @app.route('/users/update', methods = ['POST'])
    @login_required
    def update_user():
-      if (current_user.role == admin_role):
+      if (current_user.role == admin_role or app.config.LOGIN_DISABLED):
          if request.method == 'POST':
             form_data = request.form
             user_id_to_update = form_data["id"]
@@ -150,7 +147,7 @@ def create_app(db_name = "", disable_login = False):
    @app.route('/items/restart', methods = ['POST'])
    @login_required
    def restart_item():
-      if (current_user.role == writer_role):
+      if (current_user.role == writer_role or app.config.LOGIN_DISABLED):
          if request.method == 'POST':
                form_data = request.form
                task_id = form_data["id"]
