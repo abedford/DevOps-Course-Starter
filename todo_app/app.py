@@ -14,16 +14,16 @@ from oauthlib.oauth2 import WebApplicationClient
 
 
 
-def create_app(db_name = "", disable_login = False):
+def create_app():
    app = Flask(__name__)
    item_view_model = None
 
-   if disable_login == True:
+   disable_login = os.getenv('FLASK_SKIP_LOGIN')
+   if disable_login:
       print("Switching off authentication in the app config for testing purposes")
-      app.config.LOGIN_DISABLED = True
+      app.config['LOGIN_DISABLED'] = True
    mongo_srv = os.getenv('MONGO_SRV')
-   if db_name == "":
-      db_name = os.getenv('MONGO_DB')
+   db_name = os.getenv('MONGO_DB')
    mongo_user = os.getenv('MONGO_USER')
    mongo_pwd = os.getenv('MONGO_PWD')
    mongo_connection = os.getenv('MONGO_CONNECTION')
@@ -54,19 +54,18 @@ def create_app(db_name = "", disable_login = False):
       show_all = request.args.get('show_all')
       
       show_all_bool = show_all == "yes"
-      print(f"Show all value is {show_all_bool}")
       tasks = mongo_client.get_all_tasks()
       item_view_model = ViewModel(tasks)
       # We want to only show certain buttons and links to writers or admins UNLESS login is disabled (ie. we are running tests)
-      writer_bool = (current_user.role == writer_role or app.config.LOGIN_DISABLED)
-      admin_bool = (current_user.role == admin_role or app.config.LOGIN_DISABLED)
+      writer_bool = (disable_login or current_user.role == writer_role)
+      admin_bool = (disable_login or current_user.role == admin_role)
       return render_template('index.html', title='To Do App',
          view_model=item_view_model, show_all=show_all_bool, writer=writer_bool, admin=admin_bool)
 
    @app.route('/items/add', methods = ['POST'])
    @login_required
    def add_item():
-      if (current_user.role == writer_role or app.config.LOGIN_DISABLED):
+      if (disable_login or current_user.role == writer_role):
          form_data = request.form
          task_title = form_data["title"]
          task_desc = form_data["description"]
@@ -80,7 +79,7 @@ def create_app(db_name = "", disable_login = False):
    @app.route('/items/complete', methods = ['POST', 'GET'])
    @login_required
    def complete_item():
-      if (current_user.role == writer_role or app.config.LOGIN_DISABLED):
+      if (disable_login or current_user.role == writer_role):
          if request.method == 'POST':
             form_data = request.form
             task_id = form_data["id"]
@@ -94,7 +93,7 @@ def create_app(db_name = "", disable_login = False):
    @app.route('/items/remove', methods = ['POST'])
    @login_required
    def remove_item():
-      if (current_user.role == writer_role or app.config.LOGIN_DISABLED):
+      if (disable_login or current_user.role == writer_role ):
          if request.method == 'POST':
          
             form_data = request.form
@@ -108,7 +107,7 @@ def create_app(db_name = "", disable_login = False):
    @app.route('/items/start', methods = ['POST'])
    @login_required
    def start_item():
-      if (current_user.role == writer_role or app.config.LOGIN_DISABLED):
+      if (disable_login or current_user.role == writer_role):
          if request.method == 'POST':
             form_data = request.form
             task_id = form_data["id"]
@@ -120,7 +119,7 @@ def create_app(db_name = "", disable_login = False):
    @app.route('/users/', methods = ['GET'])
    @login_required
    def get_users():
-      if (current_user.role == admin_role or app.config.LOGIN_DISABLED):
+      if (disable_login or current_user.role == admin_role):
          
          users = mongo_client.get_all_users()
          
@@ -128,17 +127,15 @@ def create_app(db_name = "", disable_login = False):
             users=users)
       else:
          print(f"This page is only for admin users")
-         # need to display an error page
 
    @app.route('/users/update', methods = ['POST'])
    @login_required
    def update_user():
-      if (current_user.role == admin_role or app.config.LOGIN_DISABLED):
+      if (disable_login or current_user.role == admin_role):
          if request.method == 'POST':
             form_data = request.form
             user_id_to_update = form_data["id"]
             new_role = form_data["new_role"]
-            print(f"Form data is {form_data} - user_to_update is {user_id_to_update} new_role is {new_role}")
             mongo_client.update_user(user_id_to_update, new_role)
       else:
          print("Reader Role is not allowed to start a task")   
@@ -147,7 +144,7 @@ def create_app(db_name = "", disable_login = False):
    @app.route('/items/restart', methods = ['POST'])
    @login_required
    def restart_item():
-      if (current_user.role == writer_role or app.config.LOGIN_DISABLED):
+      if (disable_login or current_user.role == writer_role):
          if request.method == 'POST':
                form_data = request.form
                task_id = form_data["id"]
@@ -167,7 +164,7 @@ def create_app(db_name = "", disable_login = False):
             "https://github.com/login/oauth/access_token",
             authorization_response=request.url,
             redirect_url=request.base_url,
-            code=code  # get the code somehow
+            code=code  
          )
 
          headers['Accept'] = 'application/json'
