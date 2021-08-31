@@ -165,6 +165,19 @@ class ToDoMongoClient:
         return User(user.inserted_id, username, role)
 
     """
+        Deletes a user
+
+        Args:
+            user_id: The ID of the user to delete.
+
+        """
+    def delete_user(self, user_id):
+        
+        print("Deleting a user")
+
+        self.database.users.delete_one({"_id": ObjectId(user_id)})
+
+    """
         Gets user by userid
 
         Args:
