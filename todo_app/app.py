@@ -59,8 +59,9 @@ def create_app(db_name = "", disable_login = False):
          tasks = mongo_client.get_all_tasks()
          item_view_model = ViewModel(tasks)
          writer_bool = current_user.role == writer_role
+         admin_bool = current_user.role == admin_role
          return render_template('index.html', title='To Do App',
-            view_model=item_view_model, show_all=show_all_bool, writer=writer_bool)
+            view_model=item_view_model, show_all=show_all_bool, writer=writer_bool, admin=admin_bool)
       else:
          print(f"Role is not reader or writer - user is {current_user}")
          # need to display an error page

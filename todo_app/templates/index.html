@@ -1,14 +1,17 @@
 {% extends "layout.html" %}
 {% block title %}To-Do App{% endblock %}
 
+
 {% block content %}
   <div class="jumbotron">
     <h1 class="display-4">To-Do App</h1>
     <p class="lead">Just another to-do app.</p>
   
   </div>
+  <a href="/users/">User Management</a>
   <div class="container p-3 my-3 bg-dark text-white">
     <div class="row">
+      
       <div class="col-sm">
         {% if writer %}
         <h5>Add a new task</h5>
