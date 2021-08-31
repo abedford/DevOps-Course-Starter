@@ -43,13 +43,15 @@ def create_app(db_name = "", disable_login = False):
 
    writer_role = "Writer"
    reader_role = "Reader"
+   admin_role = "Admin"
 
 
    #  All the routes and setup code etc
    @app.route('/')
    @login_required
    def index():
-      if (current_user.role == reader_role or current_user.role == writer_role):
+      print(f"Current user is {current_user}")
+      if (current_user.role == reader_role or current_user.role == writer_role or current_user.role == admin_role):
          show_all = request.args.get('show_all')
          
          show_all_bool = show_all == "yes"
@@ -117,6 +119,33 @@ def create_app(db_name = "", disable_login = False):
          print("Reader Role is not allowed to start a task")   
       return redirect('/')
 
+   @app.route('/users/', methods = ['GET'])
+   @login_required
+   def get_users():
+      if (current_user.role == admin_role):
+         
+         users = mongo_client.get_all_users()
+         
+         return render_template('users.html', title='User Admin',
+            users=users)
+      else:
+         print(f"This page is only for admin users")
+         # need to display an error page
+
+   @app.route('/users/update', methods = ['POST'])
+   @login_required
+   def update_user():
+      if (current_user.role == admin_role):
+         if request.method == 'POST':
+            form_data = request.form
+            user_id_to_update = form_data["id"]
+            new_role = form_data["new_role"]
+            print(f"Form data is {form_data} - user_to_update is {user_id_to_update} new_role is {new_role}")
+            mongo_client.update_user(user_id_to_update, new_role)
+      else:
+         print("Reader Role is not allowed to start a task")   
+      return redirect('/users')
+
    @app.route('/items/restart', methods = ['POST'])
    @login_required
    def restart_item():
@@ -160,18 +189,17 @@ def create_app(db_name = "", disable_login = False):
          uri, headers, body = client.add_token(userinfo_endpoint)
          userinfo_response = requests.get(uri, headers=headers, data=body)
          
-         unique_id = userinfo_response.json()["login"]
+         login_id = userinfo_response.json()["login"]
          
-         #writer_role = Role("1", "Writer")
-         #reader_role = Role("2", "Reader")
-         user = User(unique_id, reader_role)
-         if unique_id == "abedford":
-            user = User(unique_id, reader_role)            
-
-         print(f"User created {user}")
-
+         # see if we can find the user in the database already
+         user = mongo_client.get_user_by_username(login_id)
+         if user is None:
+            # new users get added with Reader rights
+            user = mongo_client.add_user(login_id, reader_role)           
+         
          # Begin user session by logging the user in
-         session['username'] = unique_id
+         print(f"Logging in {user.username} in to the session")
+         session['username'] = user.username
          login_user(user)
          return redirect('/')
 
@@ -190,12 +218,10 @@ def create_app(db_name = "", disable_login = False):
 
    @login_manager.user_loader 
    def load_user(user_id):
-      #writer_role = Role("1", "Writer")
-      #reader_role = Role("2", "Reader")
-      user = User(user_id, reader_role)
-      if user_id == "abedford":
-         user = User(user_id, reader_role)  
-      return user
+      # get the user from the database if it exists
+      result_user = mongo_client.get_user_by_id(user_id)
+      
+      return result_user
 
    return app
 
