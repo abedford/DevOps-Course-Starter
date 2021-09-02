@@ -147,10 +147,10 @@ def test_when_more_than_5_recently_done_tasks_we_get_all_recently_done_tasks():
     onehourago = timenow.replace(hour=timenow.hour-1)
     fivehoursago = timenow.replace(hour=timenow.hour-5)
     
-    sixhoursago = timenow - timedelta(hours=6)
-    twohoursago = timenow - timedelta(hours=2)
-    sevenhoursago = timenow - timedelta(hours=7)
-    threehoursago = timenow - timedelta(hours=3)
+    sixhoursago = timenow.replace(hour=timenow.hour-6) #timenow - timedelta(hours=6)
+    twohoursago = timenow.replace(hour=timenow.hour-2) #timenow - timedelta(hours=2)
+    sevenhoursago = timenow.replace(hour=timenow.hour-7) #timenow - timedelta(hours=7)
+    threehoursago = timenow.replace(hour=timenow.hour-3) #timenow - timedelta(hours=3)
     items[0].modified_date = onehourago
     items[1].modified_date = fivehoursago
     items[2].modified_date = sixhoursago
