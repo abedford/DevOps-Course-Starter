@@ -26,9 +26,9 @@ def test_app():
     testClient = ToDoMongoClient(mongo_user, mongo_pwd, mongo_srv, "test_db", mongo_connection)
     
     
-    testClient.add_user("admin_user", "Admin")
-    testClient.add_user("writer_user", "Writer")
-    testClient.add_user("reader_user", "Reader")
+    admin_user = testClient.add_user("admin_user", "Admin")
+    writer_user = testClient.add_user("writer_user", "Writer")
+    reader_user = testClient.add_user("reader_user", "Reader")
 
     application = create_app()
         
@@ -40,6 +40,9 @@ def test_app():
         
     # Tear Down
     thread.join(1)
+    testClient.delete_user(admin_user.id)
+    testClient.delete_user(writer_user.id)
+    testClient.delete_user(reader_user.id)
     
 
 @pytest.fixture(scope="module")
