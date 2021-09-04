@@ -16,7 +16,19 @@ def test_app():
     file_path = find_dotenv('.env')
     load_dotenv(file_path, override=True)
     os.environ['FLASK_SKIP_LOGIN'] = "True"
-    os.environ['MONGO_DB'] = "testdb"
+    os.environ['MONGO_DB'] = "test_db"
+    
+    mongo_srv = os.getenv('MONGO_SRV')
+    mongo_user = os.getenv('MONGO_USER')
+    mongo_pwd = os.getenv('MONGO_PWD')
+    mongo_connection = os.getenv('MONGO_CONNECTION')
+
+    testClient = ToDoMongoClient(mongo_user, mongo_pwd, mongo_srv, "test_db", mongo_connection)
+    
+    
+    testClient.add_user("admin_user", "Admin")
+    testClient.add_user("writer_user", "Writer")
+    testClient.add_user("reader_user", "Reader")
 
     application = create_app()
         
