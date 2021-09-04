@@ -118,6 +118,7 @@ env/
 
 ### Configuration files ###
 .env
+env-file.txt
 
 ### UI testing driver ###
 chromedriver.exe

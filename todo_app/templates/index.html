@@ -1,15 +1,21 @@
 {% extends "layout.html" %}
 {% block title %}To-Do App{% endblock %}
 
+
 {% block content %}
   <div class="jumbotron">
     <h1 class="display-4">To-Do App</h1>
     <p class="lead">Just another to-do app.</p>
   
   </div>
+  {% if admin %}
+    <a href="/users/">User Management</a>
+  {% endif %}
   <div class="container p-3 my-3 bg-dark text-white">
     <div class="row">
+      
       <div class="col-sm">
+        {% if writer %}
         <h5>Add a new task</h5>
         <form action="/items/add" method = "POST">
           <table class="table table-striped text-white" >
@@ -26,7 +32,7 @@
             </thead>
           </table>
       </form>
-        
+      {% endif %}
       </div>
     </div> 
   </div>
@@ -53,19 +59,25 @@
             <td>{{ task.status }}</td>
             <td>{{ task.description }}</td>
             <td>{{ task.duedate }}</td>
-            <td><form action="/items/remove" method = "POST">
+            <td>
+            {% if writer %}
+              <form action="/items/remove" method = "POST">
               <input type="hidden" name="id" value="{{ task.id }}"/>
               <button type="submit" class="btn btn-primary" name="delete-todo">Delete</button>
-            </form></td>
+            </form>
+            {% endif %}
+          </td>
 
             
             
             <td>
-              {% if task.status == 'To Do' %}
-              <form action="/items/start" method = "POST">
-                <input type="hidden" name="id" value="{{ task.id }}"/>
-                <button type="submit" class="btn btn-primary" name="start">Start</button>
-              </form>
+              {% if writer %}
+                {% if task.status == 'To Do' %}
+                <form action="/items/start" method = "POST">
+                  <input type="hidden" name="id" value="{{ task.id }}"/>
+                  <button type="submit" class="btn btn-primary" name="start">Start</button>
+                </form>
+              {% endif %}
             {% endif %}
             </td>
           </tr>
@@ -94,16 +106,22 @@
         <td>{{ task.status }}</td>
         <td>{{ task.description }}</td>
         <td>{{ task.duedate }}</td>
-        <td><form action="/items/remove" method = "POST">
+        <td>
+          {% if writer %}
+          <form action="/items/remove" method = "POST">
           <input type="hidden" name="id" value="{{ task.id }}"/>
           <button type="submit" class="btn btn-primary">Delete</button>
-        </form></td>
+        </form>
+        {% endif %}
+        </td>
         <td>
-          {% if task.status != 'Done' %}
-          <form action="/items/complete" method = "POST">
-            <input type="hidden" name="id" value="{{ task.id }}"/>
-            <button type="submit" class="btn btn-primary" name="complete">Complete</button>
-          </form>
+          {% if writer %}
+            {% if task.status != 'Done' %}
+            <form action="/items/complete" method = "POST">
+              <input type="hidden" name="id" value="{{ task.id }}"/>
+              <button type="submit" class="btn btn-primary" name="complete">Complete</button>
+            </form>
+            {% endif %}
           {% endif %}
         </td>
         
@@ -145,16 +163,22 @@
             <td>{{ task.description }}</td>
             <td>{{ task.duedate }}</td>
             <td>{{ task.modified_date }}</td>
-            <td><form action="/items/remove" method = "POST">
+            <td>
+              {% if writer %}
+              <form action="/items/remove" method = "POST">
               <input type="hidden" name="id" value="{{ task.id }}"/>
               <button type="submit" class="btn btn-primary" name="delete">Delete</button>
-            </form></td>
+            </form>
+            {% endif %}
+          </td>
             <td>
+              {% if writer %}
               {% if task.status == 'Done' %}
               <form action="/items/restart" method = "POST">
                 <input type="hidden" name="id" value="{{ task.id }}"/>
                 <button type="submit" class="btn btn-primary" name="restart">Restart</button>
               </form>
+            {% endif %}
             {% endif %}
             </td>
           </tr>
@@ -171,16 +195,22 @@
           <td>{{ task.description }}</td>
           <td>{{ task.duedate }}</td>
           <td>{{ task.modified_date }}</td>
-          <td><form action="/items/remove" method = "POST">
+          <td>
+            {% if writer %}
+            <form action="/items/remove" method = "POST">
             <input type="hidden" name="id" value="{{ task.id }}"/>
             <button type="submit" class="btn btn-primary" name="delete">Delete</button>
-          </form></td>
+          </form>
+          {% endif %}
+        </td>
           <td>
+            {% if writer %}
             {% if task.status == 'Done' %}
             <form action="/items/restart" method = "POST">
               <input type="hidden" name="id" value="{{ task.id }}"/>
               <button type="submit" class="btn btn-primary" name="restart">Restart</button>
             </form>
+            {% endif %}
           {% endif %}
           </td>
         </tr>

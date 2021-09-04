@@ -15,11 +15,10 @@ def client():
     file_path = find_dotenv('.env.test')
     load_dotenv(file_path, override=True)
     
-    
-
     with mongomock.patch(servers=(('test.mongodb.net', 27017),)):
         # Create the new app.
         test_app = create_app()
+        
         # Use the app to create a test_client that can be used in our tests.
         with test_app.test_client() as client:
             yield client
@@ -30,13 +29,14 @@ def test_index_page(client):
     # set up some data
     db_client = pymongo.MongoClient("test.mongodb.net")
     dummy_task_id = add_dummy_task(db_client)
+    
     response = client.get('/')
 
     assert response.status_code == 200
 
     string = response.data.decode('utf-8')
     assert "Dummy Task" in string
-
+    
 
 def test_add_task(client):
     data = {
@@ -129,6 +129,7 @@ def test_restart_task(client):
     string = response.data.decode('utf-8')
     assert "Dummy Task" in string
     assert "To Do" in string
+
 
 
 def add_dummy_task(mongoclient, status="To Do"):

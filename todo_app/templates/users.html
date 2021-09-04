@@ -1,0 +1,49 @@
+{% extends "layout.html" %}
+{% block title %}To-Do App{% endblock %}
+
+{% block content %}
+  <div class="jumbotron">
+    <h1 class="display-4">To-Do App</h1>
+    <p class="lead">User Admin</p>
+  
+  </div>
+  <a href="/">Home</a>
+  <div class="container">
+    <table class="table table-striped" id="users">
+      <thead>
+        <tr>
+          <th scope="col">User Name</th>
+          <th scope="col">User Role</th>
+        </tr>
+      </thead>
+      <tbody>
+        <tr>
+        <h3>All Users</h3>
+        </tr>
+        {% for user in users %}
+          <tr>
+            
+            <td>{{ user.username }}</td>
+            <td>{{ user.role }}</td>
+            
+              <form action="/users/update" method = "POST">
+              <input type="hidden" name="id" value="{{ user.id }}"/>
+              <td><label for="roles">Choose a new role:</label>
+                <select id="new_role" name="new_role">
+                  <option value="Writer">Writer</option>
+                  <option value="Reader">Reader</option>
+                  <option value="Admin">Admin</option>
+                </select></td>
+              <td><button type="submit" class="btn btn-primary" name="update_user_button">Update</button></td>
+            </form>
+          
+
+          
+        </tr>
+        {% endfor %}
+        </tbody>
+      </table>
+  </div>
+  
+  
+{% endblock %}

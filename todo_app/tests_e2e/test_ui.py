@@ -15,15 +15,22 @@ def test_app():
     # Create the new board & update the board id environment variable
     file_path = find_dotenv('.env')
     load_dotenv(file_path, override=True)
+    os.environ['FLASK_SKIP_LOGIN'] = "True"
+    os.environ['MONGO_DB'] = "test_db"
     
     mongo_srv = os.getenv('MONGO_SRV')
     mongo_user = os.getenv('MONGO_USER')
     mongo_pwd = os.getenv('MONGO_PWD')
     mongo_connection = os.getenv('MONGO_CONNECTION')
 
-    database_name = "testdb"
+    testClient = ToDoMongoClient(mongo_user, mongo_pwd, mongo_srv, "test_db", mongo_connection)
+    
+    
+    admin_user = testClient.add_user("admin_user", "Admin")
+    writer_user = testClient.add_user("writer_user", "Writer")
+    reader_user = testClient.add_user("reader_user", "Reader")
 
-    application = create_app(database_name)
+    application = create_app()
         
     # start the app in its own thread.
     thread = Thread(target=lambda: application.run(use_reloader=False))
@@ -33,6 +40,9 @@ def test_app():
         
     # Tear Down
     thread.join(1)
+    testClient.delete_user(admin_user.id)
+    testClient.delete_user(writer_user.id)
+    testClient.delete_user(reader_user.id)
     
 
 @pytest.fixture(scope="module")
@@ -45,6 +55,49 @@ def driver():
    
     with webdriver.Chrome(options=options) as driver:
         yield driver
+
+def test_user_admin(driver, test_app):
+    before_XPath = "//*[@id='users']/tbody/tr["
+    aftertd_XPath = "]/td["
+    aftertr_XPath = "]"
+
+
+    driver.get('http://localhost:5000/users')
+
+    assert driver.title == 'To-Do App'
+
+    num_rows = len (driver.find_elements_by_xpath("//*[@id='users']/tbody/tr"))
+
+    assert num_rows == 4, "Should be 4 rows in the table"
+    
+    user1XPath = before_XPath + str(2) + aftertd_XPath + str(1) + aftertr_XPath
+    user1UsernameCellText = driver.find_element_by_xpath(user1XPath).text
+
+    user1XPath = before_XPath + str(2) + aftertd_XPath + str(2) + aftertr_XPath
+    user1RoleCellText = driver.find_element_by_xpath(user1XPath).text
+
+    assert user1UsernameCellText == "admin_user", "First user should be admin_user username"
+    assert user1RoleCellText == "Admin", "First user should be admin role"
+
+    user2XPath = before_XPath + str(3) + aftertd_XPath + str(1) + aftertr_XPath
+    user2UsernameCellText = driver.find_element_by_xpath(user2XPath).text
+
+    user2XPath = before_XPath + str(3) + aftertd_XPath + str(2) + aftertr_XPath
+    user2RoleCellText = driver.find_element_by_xpath(user2XPath).text
+
+    assert user2UsernameCellText == "writer_user", "Second user should be writer_user username"
+    assert user2RoleCellText == "Writer", "First user should be writer role"
+
+    user3XPath = before_XPath + str(4) + aftertd_XPath + str(1) + aftertr_XPath
+    user3UsernameCellText = driver.find_element_by_xpath(user3XPath).text
+
+    user3XPath = before_XPath + str(4) + aftertd_XPath + str(2) + aftertr_XPath
+    user3RoleCellText = driver.find_element_by_xpath(user3XPath).text
+
+    assert user3UsernameCellText == "reader_user", "Third user should be reader_user username"
+    assert user3RoleCellText == "Reader", "Third user should be reader role"
+
+
 
 def test_task_journey(driver, test_app):
     driver.get('http://localhost:5000/')

@@ -1,5 +1,6 @@
 
 
+from todo_app.data.user import User
 from todo_app.data.task import Task
 
 import datetime
@@ -18,14 +19,16 @@ class ToDoMongoClient:
 
     def __init__(self, user, password, server, database, connection):
         
-        self.client = pymongo.MongoClient(f"{connection}://{user}:{password}@{server}/{database}?w=majority", ssl=True, tlsAllowInvalidCertificates=True)
+        self.client = pymongo.MongoClient(f"{connection}://{user}:{password}@{server}/{database}?replicaSet=globaldb&retrywrites=false&maxIdleTimeMS=120000&appName=@devopsdiploma-mongodb@", ssl=True, tlsAllowInvalidCertificates=True)
         print(f"Connected to {server}/{database}")
         self.database=self.client[database]
         self.task_collection = self.database.tasks
+        self.user_collection = self.database.users
 
     def drop_collection(self):
         print(f"Dropping {self.task_collection.name} collection")
         self.task_collection.drop()
+        self.user_collection.drop()
    
     """
         Gets all the tasks
@@ -141,5 +144,108 @@ class ToDoMongoClient:
         print(f"Task {task_id} added successfully")
         print(f"Tasks are now {self.task_collection.find()}")
         return task_id
+
+    """
+        Adds a new user with a username and a role
+
+        Args:
+            username: The username/login of the user
+            role: The role of the user
+
+    """
+    def add_user(self, username, role):
+        
+        new_user = {"username": username,
+                "role": role}
+
+        
+        user= self.database.users.insert_one(new_user)
+
+        print(f"User {user} added successfully with {user.inserted_id} as the ID and {role} as the role")
+        return User(user.inserted_id, username, role)
+
+    """
+        Deletes a user
+
+        Args:
+            user_id: The ID of the user to delete.
+
+        """
+    def delete_user(self, user_id):
+        
+        print("Deleting a user")
+
+        self.database.users.delete_one({"_id": ObjectId(user_id)})
+
+    """
+        Gets user by userid
+
+        Args:
+            user_id: The id of the user
+
+    """
+    def get_user_by_id(self, user_id):
+        
+        print(f"Looking for user with user_id {user_id}")
+    
+        user_object = self.database.users.find_one({"_id": ObjectId(user_id)})
+        if not user_object:
+            print("Didn't find the user")
+            return None
+        print("Found the user, returning user object")
+        return User(user_object["_id"], user_object["username"], user_object["role"])
+
+    """
+        Gets user by username
+
+        Args:
+            username: The username of the user to get
+
+    """
+    def get_user_by_username(self, username):
+        
+        print(f"Looking for user with username {username}")
+    
+        user_object = self.database.users.find_one({"_id": username})
+        if not user_object:
+            print("Didn't find the user")
+            return None
+        print("Found the user, returning user object")
+        return User(user_object["_id"], user_object["username"], user_object["role"])
+
+    """
+        Gets all the users that exist in the database
+
+        Args:
+
+    """    
+    def get_all_users(self):
+        users = []
+        print("Getting the users from the mongo db")
+    
+        user_objects = self.database.users.find({})
+        for user_object in user_objects:
+           
+            user = User(user_object["_id"],user_object["username"], user_object["role"])
+            users.append(user)
+
+        return users
+
+    """
+        Updates a user with a new role
+
+        Args:
+            userid: The id of the user
+            description: The new role for the user
+
+    """
+    def update_user(self, userid, role):
+        
+        print(f"Updating a user {userid} with role {role}")
+        filter = { "_id": ObjectId(userid) }
+        newrole = { "$set": { "role": role} }
+    
+        self.database.users.update_one(filter, newrole)
+
 
 

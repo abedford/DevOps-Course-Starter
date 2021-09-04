@@ -153,3 +153,6 @@ You will find the code documentation diagrams under the documentation folder. Th
 ## Deploying to Docker Hub Registry
 The travis continuous integration is set up so that when you check anything in, it will automatically build a development and test image to run the tests for the application. If this all succeeds, and it's on the main branch, then the check-in will trigger a production build which will then get pushed to docker hub, and to heroku. Once this is pushed, it gets released and you can see the application working in heroku. 
 
+## User Authorization
+The application uses GitHub OAuth to authorize users. By default any new users will be Read-only and will need an administrator to update their role if they need extra rights to edit tasks, add tasks or manage users. User data is stored in the mongo database. 
+
