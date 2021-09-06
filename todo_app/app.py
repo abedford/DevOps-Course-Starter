@@ -19,8 +19,8 @@ def create_app():
    item_view_model = None
 
    disable_login = os.getenv('FLASK_SKIP_LOGIN')
-   if disable_login:
-      print("Switching off authentication in the app config for testing purposes")
+   if disable_login == "True":
+      print(f"Switching off authentication in the app config for testing purposes")
       app.config['LOGIN_DISABLED'] = True
    mongo_srv = os.getenv('MONGO_SRV')
    db_name = os.getenv('MONGO_DB')
