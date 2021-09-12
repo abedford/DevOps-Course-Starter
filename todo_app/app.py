@@ -207,7 +207,7 @@ def create_app():
       authorize_endpoint = 'https://github.com/login/oauth/authorize'
       
       authorize_url = client.prepare_request_uri(
-        authorize_endpoint, "https://alb-todo-app-v2.azurewebsites.net/login/")
+        authorize_endpoint, "https://alb-todo-app-v2.azurewebsites.net/login/callback")
       return redirect(authorize_url)
 
    @login_manager.user_loader 
