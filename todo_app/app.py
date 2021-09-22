@@ -80,10 +80,10 @@ def create_app():
    @login_required
    def complete_item():
       if (disable_login or current_user.role == writer_role):
-         if request.method == 'POST':
-            form_data = request.form
-            task_id = form_data["id"]
-            mongo_client.complete_task(task_id)
+         
+         form_data = request.form
+         task_id = form_data["id"]
+         mongo_client.complete_task(task_id)
       else:
          print("Reader Role is not allowed to complete a task")   
       return redirect('/')
@@ -94,11 +94,9 @@ def create_app():
    @login_required
    def remove_item():
       if (disable_login or current_user.role == writer_role ):
-         if request.method == 'POST':
-         
-            form_data = request.form
-            task_id = form_data["id"]
-            mongo_client.delete_task(task_id)
+         form_data = request.form
+         task_id = form_data["id"]
+         mongo_client.delete_task(task_id)
       else:
          print("Reader Role is not allowed to remove a task")   
       return redirect('/')
@@ -108,10 +106,9 @@ def create_app():
    @login_required
    def start_item():
       if (disable_login or current_user.role == writer_role):
-         if request.method == 'POST':
-            form_data = request.form
-            task_id = form_data["id"]
-            mongo_client.start_task(task_id)
+         form_data = request.form
+         task_id = form_data["id"]
+         mongo_client.start_task(task_id)
       else:
          print("Reader Role is not allowed to start a task")   
       return redirect('/')
@@ -132,11 +129,10 @@ def create_app():
    @login_required
    def update_user():
       if (disable_login or current_user.role == admin_role):
-         if request.method == 'POST':
-            form_data = request.form
-            user_id_to_update = form_data["id"]
-            new_role = form_data["new_role"]
-            mongo_client.update_user(user_id_to_update, new_role)
+         form_data = request.form
+         user_id_to_update = form_data["id"]
+         new_role = form_data["new_role"]
+         mongo_client.update_user(user_id_to_update, new_role)
       else:
          print("Reader Role is not allowed to start a task")   
       return redirect('/users')
@@ -157,45 +153,44 @@ def create_app():
    def login():
       code = request.args.get("code")
       
-      if request.method == 'GET':
-         code = request.args.get("code")
-         # Prepare and send a request to get tokens
-         token_url, headers, body = client.prepare_token_request(
-            "https://github.com/login/oauth/access_token",
-            authorization_response=request.url,
-            code=code  
-         )
+      code = request.args.get("code")
+      # Prepare and send a request to get tokens
+      token_url, headers, body = client.prepare_token_request(
+         "https://github.com/login/oauth/access_token",
+         authorization_response=request.url,
+         code=code  
+      )
 
-         headers['Accept'] = 'application/json'
+      headers['Accept'] = 'application/json'
 
-         token_response = requests.post(
-            token_url,
-            headers=headers,
-            data=body,
-            auth=(oauth_client_id, oauth_secret_id)
-         )
+      token_response = requests.post(
+         token_url,
+         headers=headers,
+         data=body,
+         auth=(oauth_client_id, oauth_secret_id)
+      )
          
          
-         client.parse_request_body_response(json.dumps(token_response.json()))
-         # access token is now stored in the client.access_token param
+      client.parse_request_body_response(token_response.text)
+      # access token is now stored in the client.access_token param
 
-         userinfo_endpoint = "https://api.github.com/user"
-         uri, headers, body = client.add_token(userinfo_endpoint)
-         userinfo_response = requests.get(uri, headers=headers, data=body)
-         
-         login_id = userinfo_response.json()["login"]
-         
-         # see if we can find the user in the database already
-         user = mongo_client.get_user_by_username(login_id)
-         if user is None:
-            # new users get added with Reader rights
-            user = mongo_client.add_user(login_id, reader_role)           
-         
-         # Begin user session by logging the user in
-         print(f"Logging in {user.username} in to the session")
-         session['username'] = user.username
-         login_user(user)
-         return redirect('/')
+      userinfo_endpoint = "https://api.github.com/user"
+      uri, headers, body = client.add_token(userinfo_endpoint)
+      userinfo_response = requests.get(uri, headers=headers, data=body)
+      
+      login_id = userinfo_response.json()["login"]
+      
+      # see if we can find the user in the database already
+      user = mongo_client.get_user_by_username(login_id)
+      if user is None:
+         # new users get added with Reader rights
+         user = mongo_client.add_user(login_id, reader_role)           
+      
+      # Begin user session by logging the user in
+      print(f"Logging in {user.username} in to the session")
+      session['username'] = user.username
+      login_user(user)
+      return redirect('/')
 
 
 
