@@ -32,3 +32,6 @@ Vagrantfile
 logs.txt
 .venv
 .vagrant
+.terraform.lock.*
+.terraform
+terraform.tfstate
