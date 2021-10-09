@@ -6,6 +6,7 @@ echo "$DOCKER_PW" | docker login -u "$DOCKER_USER" --password-stdin
 docker push $DOCKER_USER/todo-app-prod:latest
 docker push $DOCKER_USER/todo-app-prod:$TRAVIS_COMMIT
 docker tag $DOCKER_USER/todo-app-prod registry.heroku.com/todo-app-ab/web
+curl -dH -X POST "$(terraform output -raw cd_webhook)"
 
 docker login --username=_ --password="$HEROKU_API_KEY" registry.heroku.com
 

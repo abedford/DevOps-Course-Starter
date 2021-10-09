@@ -5,6 +5,13 @@ terraform {
       version = ">= 2.49" 
     } 
   } 
+  backend "azurerm" {
+		resource_group_name  = "CreditSuisse2_AnnieBedford_ProjectExercise"
+		storage_account_name = "albterxstorageacc"
+		container_name       = "terraform"
+		key                  = "terraform.tfstate"
+	}
+	
 } 
  
 provider "azurerm" { 
@@ -16,8 +23,8 @@ data "azurerm_resource_group" "main" {
 } 
 
 resource "azurerm_app_service_plan" "main" { 
-  name                = "alb-terx-todo-asp" 
-  location            = data.azurerm_resource_group.main.location 
+  name                = "${var.prefix}-alb-terx-todo-asp" 
+  location            = var.location 
   resource_group_name = data.azurerm_resource_group.main.name 
   kind                = "Linux" 
   reserved            = true 
@@ -29,8 +36,8 @@ resource "azurerm_app_service_plan" "main" {
 } 
  
 resource "azurerm_app_service" "main" { 
-  name                = "alb-terx-todo-app-service" 
-  location            = data.azurerm_resource_group.main.location 
+  name                = "${var.prefix}-alb-terx-todo-app-service" 
+  location            = var.location 
   resource_group_name = data.azurerm_resource_group.main.name 
   app_service_plan_id = azurerm_app_service_plan.main.id 
  
@@ -59,22 +66,10 @@ resource "azurerm_app_service" "main" {
 	} 
 } 
 
-resource "azurerm_storage_account" "main" {
-  name                     = "albterxstorageacc"
-  resource_group_name      = data.azurerm_resource_group.main.name 
-  location                 = data.azurerm_resource_group.main.location 
-  account_tier             = "Standard"
-  account_replication_type = "LRS"
-
-  tags = {
-    environment = "staging"
-  }
-}
-
 resource "azurerm_cosmosdb_account" "main" {
-  name                = "alb-terx-cosmosdb-account"
+  name                = "${var.prefix}-alb-terx-cosmosdb-account"
   resource_group_name = data.azurerm_resource_group.main.name
-  location			  = data.azurerm_resource_group.main.location 
+  location			  = var.location 
   offer_type		  = "Standard"
   kind                = "MongoDB"
   capabilities {
@@ -85,14 +80,14 @@ resource "azurerm_cosmosdb_account" "main" {
     consistency_level       = "Session"
   }
   geo_location {
-    location          = data.azurerm_resource_group.main.location
+    location          = var.location
     failover_priority = 0
   }
 }
 
 resource "azurerm_cosmosdb_mongo_database" "main" {
-  name                = "alb-terx-mongo-db"
+  name                = "${var.prefix}-alb-terx-mongo-db"
   resource_group_name = data.azurerm_resource_group.main.name
   account_name        = azurerm_cosmosdb_account.main.name
-  lifecycle { prevent_destroy = true }
+  
 }
