@@ -10,7 +10,6 @@ terraform {
 		storage_account_name = "albterxstorageacc"
 		container_name       = "terraform"
 		key                  = "terraform.tfstate"
-		access_key = "$ARM_ACCESS_KEY"
 	}
 	
 } 
