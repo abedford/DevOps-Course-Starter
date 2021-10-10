@@ -5,7 +5,7 @@ install:
 - unzip terraform_"$TF_VERSION"_linux_amd64.zip
 - sudo mv terraform /usr/local/bin/
 - rm terraform_"$TF_VERSION"_linux_amd64.zip
-- terraform init
+- terraform init -input=false
 script:
 - docker build --tag todo-app-dev --target development .
 - docker build --tag todo-app-test --target test .
@@ -14,7 +14,7 @@ script:
 - docker run --env-file .env.test todo-app-test todo_app/tests
 - bash webhook.sh
 before_deploy:
-- terraform apply -var 'prefix=test'-auto-approve
+- terraform apply -input=false -var 'prefix=test'-auto-approve
 deploy:
   skip_cleanup: true
   provider: script
