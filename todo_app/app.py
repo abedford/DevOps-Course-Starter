@@ -9,38 +9,53 @@ from flask_login import login_user
 from flask_login import current_user
 import os
 import requests
-import json
 from oauthlib.oauth2 import WebApplicationClient
 import logging
-
+from loggly.handlers import HTTPSHandler 
+from logging import Formatter
+import logging.config
+import time
 
 # create logger
 logger = logging.getLogger('todo_app')
+logging.config.fileConfig('python.conf')
+logging.Formatter.converter = time.gmtime
 logger.setLevel(logging.DEBUG)
-
+ 
 # create console handler and set level to debug
 ch = logging.StreamHandler()
-ch.setLevel(logging.DEBUG)
 
+ch.setLevel(logging.DEBUG)
 # create formatter
 formatter = logging.Formatter('%(asctime)s - %(name)s - %(levelname)s - %(message)s')
-
 # add formatter to ch
 ch.setFormatter(formatter)
-
 # add ch to logger
 logger.addHandler(ch)
 
-# 'application' code
-logger.debug('debug message')
-logger.info('info message')
-logger.warning('warn message')
-logger.error('error message')
-logger.critical('critical message')
+
+
+
+
 
 def create_app():
    app = Flask(__name__)
    item_view_model = None
+   app.logger.info ("STarting the app app logger") 
+   log_level = os.getenv('LOG_LEVEL')
+   app.logger.setLevel(log_level)
+
+   loggly_token = os.getenv('LOGGLY_TOKEN')
+   if loggly_token is not None: 
+      app.logger.info ("Setting up the loggly log") 
+      handler = HTTPSHandler(f'https://logs-01.loggly.com/inputs/{loggly_token}/tag/todo-app') 
+      handler.setFormatter( 
+        Formatter("[%(asctime)s] %(levelname)s in %(module)s: %(message)s") 
+      )  
+      app.logger.addHandler(handler) 
+   else:
+      app.logger.info("Loggly token was not found")
+
 
    logger.info("Starting the app")
    disable_login = os.getenv('FLASK_SKIP_LOGIN')
@@ -53,7 +68,7 @@ def create_app():
    mongo_pwd = os.getenv('MONGO_PWD')
    mongo_connection = os.getenv('MONGO_CONNECTION')
 
-   logger.info("Setting up Mongo Client")
+   logger.info("Setting up Mongo Client with user: %s, database: %s, mongo_connection: %s", mongo_user, db_name, mongo_connection)
    mongo_client = ToDoMongoClient(mongo_user, mongo_pwd, mongo_srv, db_name, mongo_connection)
 
    oauth_client_id = os.getenv('OAUTH_CLIENT_ID')
@@ -78,10 +93,10 @@ def create_app():
    @login_required
    def index():
       app.logger.info("Opening index page")
-      app.logger.info("Current user")
       show_all = request.args.get('show_all')
       
       show_all_bool = show_all == "yes"
+      app.logger.info("Getting all tasks")
       tasks = mongo_client.get_all_tasks()
       item_view_model = ViewModel(tasks)
       # We want to only show certain buttons and links to writers or admins UNLESS login is disabled (ie. we are running tests)
@@ -93,14 +108,13 @@ def create_app():
    @app.route('/items/add', methods = ['POST'])
    @login_required
    def add_item():
-      logger.info("Adding an item route")
+      
       if (disable_login or current_user.role == writer_role):
          form_data = request.form
          task_title = form_data["title"]
          task_desc = form_data["description"]
          task_due_date = form_data["duedate"]
-         logger.info("Adding a new task")
-         logger.info(f"Details of task: {task_title} | {task_desc} | {task_due_date}")
+         app.logger.info("Adding a new task, details: %s | %s | %s" , task_title, task_desc, task_due_date)
          mongo_client.add_task(task_title, task_desc, task_due_date) 
       else:
          logger.error(f"Reader Role is not allowed to add a task")
@@ -113,6 +127,7 @@ def create_app():
          
          form_data = request.form
          task_id = form_data["id"]
+         logger.info("Completing a task with ID: %s", task_id)
          mongo_client.complete_task(task_id)
       else:
          logger.error(f"Reader Role is not allowed to complete a task")
@@ -126,6 +141,7 @@ def create_app():
       if (disable_login or current_user.role == writer_role ):
          form_data = request.form
          task_id = form_data["id"]
+         logger.info("Deleting a task with ID: %s", task_id)
          mongo_client.delete_task(task_id)
       else:
          logger.error(f"Reader Role is not allowed to remove a task")
@@ -138,6 +154,7 @@ def create_app():
       if (disable_login or current_user.role == writer_role):
          form_data = request.form
          task_id = form_data["id"]
+         logger.info("Starting a task with ID: %s", task_id)
          mongo_client.start_task(task_id)
       else:
          logger.error(f"Reader Role is not allowed to start a task")
@@ -162,6 +179,7 @@ def create_app():
          form_data = request.form
          user_id_to_update = form_data["id"]
          new_role = form_data["new_role"]
+         logger.info("Updating a user with ID: %s to new role: %s", user_id_to_update, new_role)
          mongo_client.update_user(user_id_to_update, new_role)
       else:
          logger.error(f"Reader Role is not allowed to update a task")
@@ -174,6 +192,7 @@ def create_app():
          if request.method == 'POST':
                form_data = request.form
                task_id = form_data["id"]
+               logger.info("Restarting a task with ID: %s", task_id)
                mongo_client.reopen_task(task_id)
       else:
          logger.error(f"Reader Role is not allowed to restart a task")   
