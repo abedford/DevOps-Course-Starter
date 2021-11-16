@@ -57,7 +57,7 @@ resource "azurerm_app_service" "main" {
 	"MONGO_USER" = "${azurerm_cosmosdb_account.main.name}"
 	"MONGO_DB"= "todo_db"
 	"OAUTH_CLIENT_ID" = "640c2ac9d976df608c2b"
-	"OAUTH_CLIENT_SECRET" = "ef7ae083a8df980361f0dbff6ab3baa23f943245"
+	"OAUTH_CLIENT_SECRET" = "${var.oauth_client_secret}"
 	"PORT" = "5000"
 	"WEBSITE_HTTPLOGGING_RETENTION_DAYS" = "10"
 	"WEBSITES_ENABLE_APP_SERVICE_STORAGE" = "false"
