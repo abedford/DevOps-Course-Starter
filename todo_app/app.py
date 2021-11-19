@@ -41,7 +41,7 @@ logger.addHandler(ch)
 def create_app():
    app = Flask(__name__)
    item_view_model = None
-   app.logger.info ("STarting the app app logger") 
+   app.logger.info ("Starting the app logger") 
    log_level = os.getenv('LOG_LEVEL')
    app.logger.setLevel(log_level)
 
