@@ -34,10 +34,6 @@ ch.setFormatter(formatter)
 logger.addHandler(ch)
 
 
-
-
-
-
 def create_app():
    app = Flask(__name__)
    item_view_model = None
@@ -80,7 +76,7 @@ def create_app():
    client = WebApplicationClient(oauth_client_id)
 
    os.environ['OAUTHLIB_INSECURE_TRANSPORT'] = '1'
-   secret_key = oauth_secret_id
+   app.secret_key = os.getenv('SECRET_KEY')  # used for cookies
    writer_role = "Writer"
    reader_role = "Reader"
    admin_role = "Admin"
