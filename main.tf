@@ -64,6 +64,8 @@ resource "azurerm_app_service" "main" {
 	"WEBSITES_PORT" = 5000
 	"MONGODB_CONNECTION_STRING" = "mongodb://${azurerm_cosmosdb_account.main.name}:$@${azurerm_cosmosdb_account.main.name}.mongo.cosmos.azure.com:10255/DefaultDatabase?ssl=true&replicaSet=globaldb&retrywrites=false&maxIdleTimeMS=120000"
   "SECRET_KEY" = var.secret_key
+  "LOG_LEVEL"="DEBUG"
+  "LOGGLY_TOKEN"= var.loggly_token
 	} 
 } 
 

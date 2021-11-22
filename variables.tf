@@ -5,7 +5,10 @@ variable "prefix" {
 variable "oauth_client_secret" { 
   description = "The client secret to use for oauth" 
 } 
- 
+
+variable "loggly_token" {
+  description = "The token for loggly"
+}
  
 variable "secret_key" { 
   description = "The secret key to use for cookies" 
