@@ -2,15 +2,15 @@ variable "prefix" {
   description = "The prefix used for all resources in this environment" 
 } 
 
-variable "oauth_client_secret" { 
+variable "OAUTH_CLIENT_SECRET" { 
   description = "The client secret to use for oauth" 
 } 
 
-variable "loggly_token" {
+variable "LOGGLY_TOKEN" {
   description = "The token for loggly"
 }
  
-variable "secret_key" { 
+variable "SECRET_KEY" { 
   description = "The secret key to use for cookies" 
 } 
 
