@@ -57,15 +57,15 @@ resource "azurerm_app_service" "main" {
 	"MONGO_USER" = "${azurerm_cosmosdb_account.main.name}"
 	"MONGO_DB"= "todo_db"
 	"OAUTH_CLIENT_ID" = "640c2ac9d976df608c2b"
-	"OAUTH_CLIENT_SECRET" = var.oauth_client_secret
+	"OAUTH_CLIENT_SECRET" = var.OAUTH_CLIENT_SECRET
 	"PORT" = "5000"
 	"WEBSITE_HTTPLOGGING_RETENTION_DAYS" = "10"
 	"WEBSITES_ENABLE_APP_SERVICE_STORAGE" = "false"
 	"WEBSITES_PORT" = 5000
 	"MONGODB_CONNECTION_STRING" = "mongodb://${azurerm_cosmosdb_account.main.name}:$@${azurerm_cosmosdb_account.main.name}.mongo.cosmos.azure.com:10255/DefaultDatabase?ssl=true&replicaSet=globaldb&retrywrites=false&maxIdleTimeMS=120000"
-  "SECRET_KEY" = var.secret_key
+  "SECRET_KEY" = var.SECRET_KEY
   "LOG_LEVEL"="DEBUG"
-  "LOGGLY_TOKEN"= var.loggly_token
+  "LOGGLY_TOKEN"= var.LOGGLY_TOKEN
 	} 
 } 
 
