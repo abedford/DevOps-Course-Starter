@@ -14,7 +14,8 @@ script:
 - docker run --env-file .env.test todo-app-test todo_app/tests
 - bash webhook.sh
 before_deploy:
-- terraform apply -input=false -var 'prefix=test' -auto-approve
+- terraform apply -input=false -var 'prefix=test' -var 'oauth_client_secret=OAUTH_CLIENT_SECRET'
+  -auto-approve
 deploy:
   skip_cleanup: true
   provider: script
