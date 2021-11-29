@@ -123,7 +123,7 @@ def create_app():
          
          form_data = request.form
          task_id = form_data["id"]
-         logger.info("Completing a task with ID: %s", task_id)
+         app.logger.info("Completing a task with ID: %s", task_id)
          mongo_client.complete_task(task_id)
       else:
          logger.error(f"Reader Role is not allowed to complete a task")
@@ -137,7 +137,7 @@ def create_app():
       if (disable_login or current_user.role == writer_role ):
          form_data = request.form
          task_id = form_data["id"]
-         logger.info("Deleting a task with ID: %s", task_id)
+         app.logger.info("Deleting a task with ID: %s", task_id)
          mongo_client.delete_task(task_id)
       else:
          logger.error(f"Reader Role is not allowed to remove a task")
@@ -150,10 +150,10 @@ def create_app():
       if (disable_login or current_user.role == writer_role):
          form_data = request.form
          task_id = form_data["id"]
-         logger.info("Starting a task with ID: %s", task_id)
+         app.logger.info("Starting a task with ID: %s", task_id)
          mongo_client.start_task(task_id)
       else:
-         logger.error(f"Reader Role is not allowed to start a task")
+         app.logger.error(f"Reader Role is not allowed to start a task")
       return redirect('/')
 
    @app.route('/users/', methods = ['GET'])
@@ -166,7 +166,7 @@ def create_app():
          return render_template('users.html', title='User Admin',
             users=users)
       else:
-         logger.error(f"This page is only for administrators")
+         app.logger.error(f"This page is only for administrators")
 
    @app.route('/users/update', methods = ['POST'])
    @login_required
@@ -175,10 +175,10 @@ def create_app():
          form_data = request.form
          user_id_to_update = form_data["id"]
          new_role = form_data["new_role"]
-         logger.info("Updating a user with ID: %s to new role: %s", user_id_to_update, new_role)
+         app.logger.info("Updating a user with ID: %s to new role: %s", user_id_to_update, new_role)
          mongo_client.update_user(user_id_to_update, new_role)
       else:
-         logger.error(f"Reader Role is not allowed to update a task")
+         app.logger.error(f"Reader Role is not allowed to update a task")
       return redirect('/users')
 
    @app.route('/items/restart', methods = ['POST'])
@@ -191,12 +191,12 @@ def create_app():
                logger.info("Restarting a task with ID: %s", task_id)
                mongo_client.reopen_task(task_id)
       else:
-         logger.error(f"Reader Role is not allowed to restart a task")   
+         app.logger.error(f"Reader Role is not allowed to restart a task")   
       return redirect('/')
 
    @app.route('/login/callback', methods = ['GET'])
    def login():
-      logger.info(f"Logging you in as a user") 
+      app.logger.info(f"Logging you in as a user") 
       code = request.args.get("code")
       
       code = request.args.get("code")
@@ -225,16 +225,16 @@ def create_app():
       userinfo_response = requests.get(uri, headers=headers, data=body)
       
       login_id = userinfo_response.json()["login"]
-      logger.debug(f"Looking for {login_id} in the database")
+      app.logger.debug(f"Looking for {login_id} in the database")
       # see if we can find the user in the database already
       user = mongo_client.get_user_by_username(login_id)
       if user is None:
          # new users get added with Reader rights
-         logger.debug(f"Creating new user with {login_id} and reader role")
+         app.logger.debug(f"Creating new user with {login_id} and reader role")
          user = mongo_client.add_user(login_id, reader_role)           
       
       # Begin user session by logging the user in
-      logger.info(f"Logging in to the session")
+      app.logger.info(f"Logging in to the session")
       session['username'] = user.username
       login_user(user)
       return redirect('/')
@@ -247,7 +247,7 @@ def create_app():
    @login_manager.unauthorized_handler 
    def unauthenticated(): 
       authorize_endpoint = 'https://github.com/login/oauth/authorize'
-      logger.info(f"User is unauthenticated, redirecting to authentication service")
+      app.logger.info(f"User is unauthenticated, redirecting to authentication service")
       authorize_url = client.prepare_request_uri(
         authorize_endpoint, "https://test-alb-terx-todo-app-service.azurewebsites.net/login/callback")
       return redirect(authorize_url)
@@ -255,7 +255,7 @@ def create_app():
    @login_manager.user_loader 
    def load_user(user_id):
       # get the user from the database if it exists
-      logger.info(f"Loading user")
+      app.logger.info(f"Loading user")
       result_user = mongo_client.get_user_by_id(user_id)
       
       return result_user
