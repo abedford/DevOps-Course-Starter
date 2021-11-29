@@ -19,6 +19,7 @@ class ToDoMongoClient:
 
     def __init__(self, user, password, server, database, connection):
         self.client = pymongo.MongoClient(f"{connection}://{user}:{password}@{server}/{database}?replicaSet=globaldb&retrywrites=false&maxIdleTimeMS=120000&appName=@{user}@", ssl=True, tlsAllowInvalidCertificates=True)
+        
         print(f"Connected to {server}/{database}")
         self.database=self.client[database]
         self.task_collection = self.database.tasks

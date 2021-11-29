@@ -22,6 +22,7 @@ RUN apt-get update \
 RUN curl -sSL https://raw.githubusercontent.com/python-poetry/poetry/master/get-poetry.py | python -
 WORKDIR /todo_app
 COPY poetry.lock pyproject.toml /todo_app/
+COPY python.conf ./
 
 ENV PATH="$POETRY_HOME/bin:$PATH"
 
