@@ -52,3 +52,5 @@ spec:
               secretKeyRef:
                 name: secret-key
                 key: secret
+          - name: PORT
+            value: "5000"
